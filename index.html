@@ -54,6 +54,7 @@
         .btn-delete { background: #f56565; }
         .btn-card { background: #1a1a2e; }
         .btn-pix { background: #32BCAD; }
+        .btn-success { background: #10b981; }
         .btn-small { padding: 6px 12px; font-size: 0.85em; }
         
         .table-container { overflow-x: auto; margin-top: 15px; }
@@ -73,15 +74,48 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
-        .modal-content { background: white; margin: 3% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; color: #2d3748; }
-        .close { float: right; font-size: 32px; cursor: pointer; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); overflow-y: auto; }
+        .modal-content { background: white; margin: 3% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; color: #2d3748; }
+        .close { float: right; font-size: 32px; cursor: pointer; color: #718096; }
+        .close:hover { color: #FF7A00; }
         
         .invoice-box { background: #fff7ed; border: 2px solid #FF7A00; border-radius: 12px; padding: 20px; margin: 15px 0; }
         .invoice-box h3 { color: #FF7A00; margin-bottom: 15px; }
-        .invoice-code { background: white; padding: 12px; border-radius: 8px; margin: 10px 0; font-family: monospace; border: 2px dashed #FF7A00; text-align: center; }
+        .invoice-code { background: white; padding: 12px; border-radius: 8px; margin: 10px 0; font-family: monospace; border: 2px dashed #FF7A00; text-align: center; word-break: break-all; }
         .copy-btn { background: #4299e1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
         .success-msg { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        .error-msg { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        
+        /* FORMULÁRIO DE CARTÃO */
+        .card-form { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 25px; border-radius: 16px; margin: 20px 0; color: white; }
+        .card-form h3 { color: #FFB347; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .card-form .form-group label { color: #FFB347; }
+        .card-form .form-group input, .card-form .form-group select { background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); color: white; }
+        .card-form .form-group input::placeholder { color: rgba(255,255,255,0.5); }
+        .card-form .form-group input:focus { border-color: #FF7A00; background: rgba(255,255,255,0.15); }
+        
+        .card-preview { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 16px; margin-bottom: 20px; color: white; min-height: 180px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .card-preview .card-number { font-size: 1.5em; letter-spacing: 3px; margin: 30px 0; font-family: 'Courier New', monospace; }
+        .card-preview .card-info { display: flex; justify-content: space-between; margin-top: 20px; }
+        .card-preview .card-label { font-size: 0.7em; opacity: 0.7; text-transform: uppercase; }
+        .card-preview .card-value { font-size: 1em; margin-top: 5px; }
+        .card-chip { width: 40px; height: 30px; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); border-radius: 6px; margin-bottom: 10px; }
+        
+        .pix-qr-container { text-align: center; padding: 20px; }
+        .pix-qr-container img { max-width: 280px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; background: white; margin: 20px auto; }
+        
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top: 5px solid #FF7A00; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .payment-method-btn { padding: 25px; border: 3px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.3s; text-align: center; background: white; }
+        .payment-method-btn:hover { border-color: #FF7A00; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,122,0,0.2); }
+        .payment-method-btn .icon { font-size: 2.5em; margin-bottom: 10px; }
+        .payment-method-btn .title { font-weight: 700; color: #2d3748; }
+        .payment-method-btn .desc { font-size: 0.85em; color: #718096; margin-top: 5px; }
+        
+        .section-divider { border-top: 2px solid #e2e8f0; margin: 20px 0; padding-top: 20px; }
     </style>
 </head>
 <body>
@@ -96,14 +130,14 @@
             <div class="login-error" id="loginError"></div>
             <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label> Usuário</label>
+                    <label>👤 Usuário</label>
                     <input type="text" id="loginUser" placeholder="Digite seu usuário" required>
                 </div>
                 <div class="form-group">
-                    <label> Senha</label>
+                    <label>🔒 Senha</label>
                     <input type="password" id="loginPass" placeholder="Digite sua senha" required>
                 </div>
-                <button type="submit" class="btn-login"> Entrar no Sistema</button>
+                <button type="submit" class="btn-login">🔐 Entrar no Sistema</button>
             </form>
         </div>
     </div>
@@ -118,7 +152,7 @@
                         <div class="subtitle">Sistema de Pagamentos - Banco Inter</div>
                     </div>
                     <div class="user-info">
-                        <span>👤 Usuário: <strong id="currentUser">-</strong></span>
+                        <span> Usuário: <strong id="currentUser">-</strong></span>
                         <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
                     </div>
                 </div>
@@ -132,10 +166,10 @@
             </div>
 
             <div class="tabs">
-                <button class="tab active" onclick="showTab('clientes', this)"> Clientes</button>
+                <button class="tab active" onclick="showTab('clientes', this)">👥 Clientes</button>
                 <button class="tab" onclick="showTab('devedores', this)">💰 Devedores</button>
                 <button class="tab" onclick="showTab('cobrancas', this)">💳 Cobranças</button>
-                <button class="tab" onclick="showTab('config', this)">⚙️ Config</button>
+                <button class="tab" onclick="showTab('config', this)">️ Config</button>
             </div>
 
             <!-- CLIENTES -->
@@ -174,7 +208,7 @@
                     <button class="btn" onclick="cadastrarDevedor()">✅ Salvar</button>
                 </div>
                 <div class="card">
-                    <h2>📊 Devedores</h2>
+                    <h2> Devedores</h2>
                     <div class="table-container"><table><thead><tr><th>Devedor</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
                 </div>
             </div>
@@ -182,7 +216,7 @@
             <!-- COBRANÇAS -->
             <div id="tab-cobrancas" class="tab-content">
                 <div class="card">
-                    <h2>💳 Cobranças Geradas</h2>
+                    <h2> Cobranças Geradas</h2>
                     <div class="table-container"><table><thead><tr><th>Código</th><th>Devedor</th><th>Valor</th><th>Método</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaCobrancas"></tbody></table></div>
                 </div>
             </div>
@@ -202,6 +236,7 @@
         </div>
     </div>
 
+    <!-- MODAL COBRANÇA -->
     <div id="modalCobranca" class="modal">
         <div class="modal-content">
             <span class="close" onclick="fecharModal()">&times;</span>
@@ -217,6 +252,10 @@
 
         const LOGIN_CORRETO = 'M1D5admin';
         const SENHA_CORRETA = 'RoMa*2026';
+
+        // Variáveis globais para o modal
+        let currentDebtorId = null;
+        let currentDebtData = null;
 
         window.addEventListener('load', function() {
             const usuarioSalvo = localStorage.getItem('usuarioLogado');
@@ -237,7 +276,7 @@
                 mostrarSistema(user);
             } else {
                 const errorDiv = document.getElementById('loginError');
-                errorDiv.textContent = ' Usuário ou senha incorretos!';
+                errorDiv.textContent = '❌ Usuário ou senha incorretos!';
                 errorDiv.style.display = 'block';
                 setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
             }
@@ -279,29 +318,21 @@
             
             try {
                 const { error } = await db.from('clients').insert([{ 
-                    name: name,
-                    document: doc || null,
-                    email: email || null,
-                    phone: phone || null
+                    name: name, document: doc || null, email: email || null, phone: phone || null
                 }]);
-                
                 if (error) throw error;
-                
-                alert('✅ Cliente cadastrado com sucesso!');
+                alert('✅ Cliente cadastrado!');
                 document.getElementById('clientName').value = '';
                 document.getElementById('clientDoc').value = '';
                 document.getElementById('clientEmail').value = '';
                 document.getElementById('clientPhone').value = '';
                 carregarClientes();
-            } catch (e) {
-                alert('❌ Erro ao cadastrar: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         async function carregarClientes() {
             try {
                 const { data, error } = await db.from('clients').select('*').order('created_at', { ascending: false });
-                
                 if (error) throw error;
                 
                 const tbody = document.getElementById('tabelaClientes');
@@ -310,7 +341,7 @@
                 select.innerHTML = '<option value="">Selecione um cliente...</option>';
                 
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#718096;">Nenhum cliente cadastrado</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Nenhum cliente</td></tr>';
                     document.getElementById('totalClientes').textContent = '0';
                     return;
                 }
@@ -329,9 +360,7 @@
                     </tr>`;
                     select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
                 });
-            } catch (e) {
-                console.error('Erro ao carregar clientes:', e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         function editarCliente(id, name, doc, email, phone) {
@@ -340,7 +369,6 @@
             document.getElementById('clientEmail').value = email;
             document.getElementById('clientPhone').value = phone;
             
-            // Substituir o botão de salvar por atualizar
             const btn = document.querySelector('#tab-clientes .btn');
             btn.textContent = '💾 Atualizar';
             btn.onclick = function() { atualizarCliente(id); };
@@ -354,41 +382,29 @@
             
             try {
                 const { error } = await db.from('clients').update({
-                    name: name,
-                    document: doc || null,
-                    email: email || null,
-                    phone: phone || null
+                    name: name, document: doc || null, email: email || null, phone: phone || null
                 }).eq('id', id);
-                
                 if (error) throw error;
-                
                 alert('✅ Cliente atualizado!');
                 document.getElementById('clientName').value = '';
                 document.getElementById('clientDoc').value = '';
                 document.getElementById('clientEmail').value = '';
                 document.getElementById('clientPhone').value = '';
-                
                 const btn = document.querySelector('#tab-clientes .btn');
                 btn.textContent = '💾 Salvar';
                 btn.onclick = cadastrarCliente;
-                
                 carregarClientes();
-            } catch (e) {
-                alert('❌ Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         async function excluirCliente(id) {
-            if (!confirm('️ Excluir este cliente? Todas as dívidas vinculadas também serão excluídas.')) return;
-            
+            if (!confirm('⚠️ Excluir este cliente?')) return;
             try {
                 const { error } = await db.from('clients').delete().eq('id', id);
                 if (error) throw error;
-                alert('✅ Cliente excluído!');
+                alert('✅ Excluído!');
                 carregarClientes();
-            } catch (e) {
-                alert('❌ Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         // ============ DEVEDORES ============
@@ -400,40 +416,30 @@
             const due = document.getElementById('debtDueDate').value;
             const amount = parseFloat(amountStr.replace(',', '.'));
             
-            if (!client_id) { alert('⚠️ Selecione um cliente!'); return; }
-            if (!name) { alert('️ Preencha o nome!'); return; }
+            if (!client_id) { alert('️ Selecione um cliente!'); return; }
+            if (!name) { alert('⚠️ Preencha o nome!'); return; }
             if (!amount || amount <= 0) { alert('⚠️ Valor inválido!'); return; }
-            if (!due) { alert('⚠️ Preencha a data!'); return; }
+            if (!due) { alert('️ Preencha a data!'); return; }
             
             try {
                 const { data: debtorData, error: e1 } = await db.from('debtors').insert([{ 
-                    client_id: client_id, 
-                    name: name, 
-                    document: doc || null 
+                    client_id: client_id, name: name, document: doc || null 
                 }]).select();
-                
                 if (e1) throw e1;
                 
                 const { error: e2 } = await db.from('debts').insert([{ 
-                    debtor_id: debtorData[0].id, 
-                    original_amount: amount, 
-                    amount: amount, 
-                    currency: 'BRL', 
-                    due_date: due, 
-                    status: 'Pendente' 
+                    debtor_id: debtorData[0].id, original_amount: amount, amount: amount, 
+                    currency: 'BRL', due_date: due, status: 'Pendente' 
                 }]);
-                
                 if (e2) throw e2;
                 
-                alert('✅ Devedor e dívida cadastrados!');
+                alert('✅ Devedor cadastrado!');
                 document.getElementById('debtorName').value = '';
                 document.getElementById('debtorDoc').value = '';
                 document.getElementById('debtAmount').value = '';
                 document.getElementById('debtDueDate').value = '';
                 carregarDevedores();
-            } catch (e) {
-                alert(' Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         async function carregarDevedores() {
@@ -444,7 +450,7 @@
                 let total = 0;
                 
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#718096;">Nenhum devedor</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nenhum devedor</td></tr>';
                     document.getElementById('totalDevedores').textContent = '0';
                     document.getElementById('totalDividas').textContent = 'R$ 0';
                     return;
@@ -468,31 +474,27 @@
                             <td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td>
                             <td><span class="badge ${statusClass}">${dt.status}</span></td>
                             <td>
-                                <button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')"> Cobrar</button>
+                                <button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button>
                                 <button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button>
                             </td>
                         </tr>`;
                     }
                 }
                 document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
-            } catch (e) {
-                console.error('Erro ao carregar devedores:', e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function excluirDevedor(id) {
-            if (!confirm('⚠️ Excluir devedor e sua dívida?')) return;
+            if (!confirm('⚠️ Excluir devedor?')) return;
             try {
                 await db.from('debts').delete().eq('debtor_id', id);
                 await db.from('debtors').delete().eq('id', id);
                 alert('✅ Excluído!');
                 carregarDevedores();
-            } catch (e) {
-                alert('❌ Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
-        // ============ COBRANÇAS ============
+        // ============ COBRANÇAS - COM FORMULÁRIO COMPLETO ============
         async function gerarCobranca(debtorId) {
             try {
                 const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
@@ -500,92 +502,426 @@
                 const dt = ds[0];
                 const amount = parseFloat(dt.original_amount || dt.amount);
                 
+                currentDebtorId = debtorId;
+                currentDebtData = { debtor: d, debt: dt, amount: amount };
+                
                 const html = `
                     <h2>💳 Gerar Cobrança</h2>
                     <div class="invoice-box">
-                        <h3>📋 Dados</h3>
+                        <h3>📋 Dados da Cobrança</h3>
                         <p><strong>Devedor:</strong> ${d.name}</p>
                         <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
                         <p><strong>Vencimento:</strong> ${new Date(dt.due_date).toLocaleDateString('pt-BR')}</p>
                     </div>
-                    <h3>💰 Método de Pagamento</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
-                        <button class="btn btn-card" onclick="processarCartao('${debtorId}')" style="padding: 20px;">
-                            <div style="font-size: 2em;">💳</div>
-                            <div>Cartão de Crédito</div>
-                        </button>
-                        <button class="btn btn-pix" onclick="processarPix('${debtorId}')" style="padding: 20px;">
-                            <div style="font-size: 2em;"></div>
-                            <div>PIX</div>
-                        </button>
+                    
+                    <h3>💰 Escolha o Método de Pagamento</h3>
+                    <div class="payment-methods">
+                        <div class="payment-method-btn" onclick="mostrarFormularioCartao()">
+                            <div class="icon">💳</div>
+                            <div class="title">Cartão de Crédito</div>
+                            <div class="desc">Até 12x sem juros</div>
+                        </div>
+                        <div class="payment-method-btn" onclick="mostrarFormularioPix()">
+                            <div class="icon">📱</div>
+                            <div class="title">PIX</div>
+                            <div class="desc">Pagamento instantâneo</div>
+                        </div>
                     </div>
                 `;
                 document.getElementById('conteudoCobranca').innerHTML = html;
                 abrirModal();
-            } catch (e) {
-                alert('❌ Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
-        async function processarCartao(debtorId) {
+        // FORMULÁRIO DE CARTÃO DE CRÉDITO COMPLETO
+        function mostrarFormularioCartao() {
+            const { debtor, debt, amount } = currentDebtData;
+            
+            const html = `
+                <h2>💳 Pagamento com Cartão de Crédito</h2>
+                
+                <div class="invoice-box">
+                    <h3> Dados da Cobrança</h3>
+                    <p><strong>Devedor:</strong> ${debtor.name}</p>
+                    <p><strong>Valor Total:</strong> R$ ${amount.toFixed(2)}</p>
+                    <p><strong>Vencimento:</strong> ${new Date(debt.due_date).toLocaleDateString('pt-BR')}</p>
+                </div>
+                
+                <div class="card-form">
+                    <h3>💳 Dados do Cartão</h3>
+                    
+                    <div class="form-group">
+                        <label>Número de Parcelas</label>
+                        <select id="cardInstallments" onchange="atualizarParcelas(${amount})">
+                            ${gerarOpcoesParcelas(amount)}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Número do Cartão</label>
+                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatarNumeroCartao(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nome no Cartão</label>
+                        <input type="text" id="cardName" placeholder="NOME COMO ESTÁ NO CARTÃO" style="text-transform: uppercase;">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Validade</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5" oninput="formatarValidade(this)">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="text" id="cardCvv" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    
+                    <div class="section-divider"></div>
+                    <h3>👤 Dados do Titular</h3>
+                    
+                    <div class="form-group">
+                        <label>CPF do Titular</label>
+                        <input type="text" id="cardCpf" placeholder="000.000.000-00" maxlength="14" oninput="formatarCPF(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="cardEmail" placeholder="email@exemplo.com" value="${debtor.document || ''}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="text" id="cardPhone" placeholder="(11) 99999-9999" maxlength="15" oninput="formatarTelefone(this)">
+                    </div>
+                </div>
+                
+                <div class="invoice-box" style="background: #dbeafe; border-color: #3b82f6;">
+                    <h3>💰 Resumo do Pagamento</h3>
+                    <p><strong>Valor Total:</strong> <span id="resumoTotal">R$ ${amount.toFixed(2)}</span></p>
+                    <p><strong>Parcelas:</strong> <span id="resumoParcelas">1x</span></p>
+                    <p><strong>Valor da Parcela:</strong> <span id="resumoValorParcela">R$ ${amount.toFixed(2)}</span></p>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-success" onclick="processarPagamentoCartao()" style="flex: 1; padding: 15px; font-size: 1.1em;">
+                        ✅ Processar Pagamento
+                    </button>
+                    <button class="btn btn-edit" onclick="gerarCobranca('${currentDebtorId}')" style="padding: 15px;">
+                        ← Voltar
+                    </button>
+                </div>
+            `;
+            document.getElementById('conteudoCobranca').innerHTML = html;
+        }
+
+        function gerarOpcoesParcelas(amount) {
+            let html = '';
+            for (let i = 1; i <= 12; i++) {
+                const valorParcela = amount / i;
+                html += `<option value="${i}">${i}x de R$ ${valorParcela.toFixed(2)} (sem juros)</option>`;
+            }
+            return html;
+        }
+
+        function atualizarParcelas(amount) {
+            const parcelas = parseInt(document.getElementById('cardInstallments').value);
+            const valorParcela = amount / parcelas;
+            document.getElementById('resumoTotal').textContent = `R$ ${amount.toFixed(2)}`;
+            document.getElementById('resumoParcelas').textContent = `${parcelas}x`;
+            document.getElementById('resumoValorParcela').textContent = `R$ ${valorParcela.toFixed(2)}`;
+        }
+
+        function formatarNumeroCartao(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            input.value = value;
+        }
+
+        function formatarValidade(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
+        function formatarCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            input.value = value;
+        }
+
+        function formatarTelefone(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            input.value = value;
+        }
+
+        async function processarPagamentoCartao() {
+            const { debtor, debt, amount } = currentDebtData;
+            
+            const installments = document.getElementById('cardInstallments').value;
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const cardName = document.getElementById('cardName').value.trim();
+            const cardExpiry = document.getElementById('cardExpiry').value.trim();
+            const cardCvv = document.getElementById('cardCvv').value.trim();
+            const cardCpf = document.getElementById('cardCpf').value.replace(/\D/g, '');
+            const cardEmail = document.getElementById('cardEmail').value.trim();
+            const cardPhone = document.getElementById('cardPhone').value.replace(/\D/g, '');
+            
+            // Validações
+            if (!cardNumber || cardNumber.length < 13) { alert('⚠️ Número do cartão inválido!'); return; }
+            if (!cardName) { alert('⚠️ Preencha o nome no cartão!'); return; }
+            if (!cardExpiry || cardExpiry.length < 5) { alert('⚠️ Validade inválida!'); return; }
+            if (!cardCvv || cardCvv.length < 3) { alert('⚠️ CVV inválido!'); return; }
+            if (!cardCpf || cardCpf.length < 11) { alert('⚠️ CPF inválido!'); return; }
+            if (!cardEmail) { alert('⚠️ Preencha o e-mail!'); return; }
+            
+            const code = 'M1D5-' + Date.now().toString().slice(-8);
+            
+            mostrarLoading();
+            
             try {
-                const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
-                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
-                const dt = ds[0];
-                const amount = parseFloat(dt.original_amount || dt.amount);
-                
-                const installments = prompt('Número de parcelas (1-12):', '1') || '1';
-                const code = 'M1D5-' + Date.now().toString().slice(-8);
-                
-                const { error } = await db.from('invoices').insert([{
-                    debt_id: dt.id, 
-                    invoice_code: code, 
+                // Salvar cobrança no banco
+                const { error: dbError } = await db.from('invoices').insert([{
+                    debt_id: debt.id,
+                    invoice_code: code,
                     payment_method: 'cartao',
-                    amount: amount, 
-                    currency: 'BRL', 
+                    amount: amount,
+                    currency: 'BRL',
                     status: 'pending',
-                    due_date: dt.due_date, 
+                    due_date: debt.due_date,
                     installments: parseInt(installments),
-                    bank_account: 'Banco Inter - M1D5'
+                    bank_account: 'Banco Inter - M1D5',
+                    inter_cobranca_id: null
                 }]);
                 
-                if (error) throw error;
+                if (dbError) throw dbError;
                 
-                alert('✅ Cobrança de cartão gerada!\nCódigo: ' + code);
-                fecharModal();
+                // Chamar API do Banco Inter via Worker
+                const resp = await fetch(`${WORKER_URL}/create-charge`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        dueDate: debt.due_date,
+                        payerName: debtor.name,
+                        payerDocument: debtor.document || cardCpf,
+                        payerEmail: cardEmail,
+                        description: `Cobrança ${code} - M1D5`,
+                        installments: installments,
+                        cardNumber: cardNumber,
+                        cardName: cardName,
+                        cardExpiry: cardExpiry,
+                        cardCvv: cardCvv,
+                        cardCpf: cardCpf
+                    })
+                });
+                
+                const data = await resp.json();
+                
+                if (!resp.ok) throw new Error(data.error || 'Erro ao processar pagamento');
+                
+                // Atualizar com link de pagamento
+                if (data.linkPagamento) {
+                    await db.from('invoices').update({
+                        invoice_url: data.linkPagamento,
+                        inter_cobranca_id: data.codigoCobranca
+                    }).eq('invoice_code', code);
+                }
+                
+                const html = `
+                    <h2>✅ Pagamento Processado!</h2>
+                    <div class="success-msg">
+                        ✅ Cobrança registrada com sucesso!<br>
+                        Código: <strong>${code}</strong>
+                    </div>
+                    <div class="invoice-box">
+                        <h3>📋 Detalhes</h3>
+                        <p><strong>Devedor:</strong> ${debtor.name}</p>
+                        <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+                        <p><strong>Parcelas:</strong> ${installments}x de R$ ${(amount/installments).toFixed(2)}</p>
+                        <p><strong>Código:</strong> ${code}</p>
+                    </div>
+                    ${data.linkPagamento ? `
+                    <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6;">
+                        <h3>🔗 Link de Pagamento</h3>
+                        <div class="invoice-code">${data.linkPagamento}</div>
+                        <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar Link</button>
+                        <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')"> Abrir</button>
+                        <button class="btn" onclick="enviarWhatsApp('${debtor.name}', '${data.linkPagamento}', 'R$ ${amount.toFixed(2)}')">📱 WhatsApp</button>
+                    </div>` : ''}
+                    <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width: 100%; margin-top: 20px;">✅ Concluir</button>
+                `;
+                document.getElementById('conteudoCobranca').innerHTML = html;
                 carregarCobrancas();
             } catch (e) {
-                alert('❌ Erro: ' + e.message);
+                const html = `
+                    <h2>❌ Erro no Pagamento</h2>
+                    <div class="error-msg">
+                        ❌ ${e.message}
+                    </div>
+                    <div class="invoice-box">
+                        <h3>📋 Dados da Cobrança</h3>
+                        <p><strong>Devedor:</strong> ${debtor.name}</p>
+                        <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+                        <p><strong>Código:</strong> ${code}</p>
+                    </div>
+                    <button class="btn" onclick="gerarCobranca('${currentDebtorId}')" style="width: 100%; margin-top: 20px;">🔄 Tentar Novamente</button>
+                `;
+                document.getElementById('conteudoCobranca').innerHTML = html;
+            } finally {
+                removerLoading();
             }
         }
 
-        async function processarPix(debtorId) {
+        // FORMULÁRIO PIX
+        function mostrarFormularioPix() {
+            const { debtor, debt, amount } = currentDebtData;
+            
+            const html = `
+                <h2>📱 Pagamento via PIX</h2>
+                
+                <div class="invoice-box">
+                    <h3>📋 Dados da Cobrança</h3>
+                    <p><strong>Devedor:</strong> ${debtor.name}</p>
+                    <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+                    <p><strong>Vencimento:</strong> ${new Date(debt.due_date).toLocaleDateString('pt-BR')}</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>👤 Nome do Pagador</label>
+                    <input type="text" id="pixPayerName" value="${debtor.name}" placeholder="Nome completo">
+                </div>
+                
+                <div class="form-group">
+                    <label>📄 CPF/CNPJ do Pagador</label>
+                    <input type="text" id="pixPayerDoc" value="${debtor.document || ''}" placeholder="000.000.000-00" maxlength="18" oninput="formatarDocumento(this)">
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-pix" onclick="processarPagamentoPix()" style="flex: 1; padding: 15px; font-size: 1.1em;">
+                        📱 Gerar QR Code PIX
+                    </button>
+                    <button class="btn btn-edit" onclick="gerarCobranca('${currentDebtorId}')" style="padding: 15px;">
+                        ← Voltar
+                    </button>
+                </div>
+            `;
+            document.getElementById('conteudoCobranca').innerHTML = html;
+        }
+
+        function formatarDocumento(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            input.value = value;
+        }
+
+        async function processarPagamentoPix() {
+            const { debtor, debt, amount } = currentDebtData;
+            
+            const payerName = document.getElementById('pixPayerName').value.trim();
+            const payerDoc = document.getElementById('pixPayerDoc').value.replace(/\D/g, '');
+            
+            if (!payerName) { alert('⚠️ Preencha o nome!'); return; }
+            if (!payerDoc || payerDoc.length < 11) { alert('⚠️ CPF/CNPJ inválido!'); return; }
+            
+            const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
+            
+            mostrarLoading();
+            
             try {
-                const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
-                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
-                const dt = ds[0];
-                const amount = parseFloat(dt.original_amount || dt.amount);
-                
-                const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
-                
-                const { error } = await db.from('invoices').insert([{
-                    debt_id: dt.id, 
-                    invoice_code: code, 
+                const { error: dbError } = await db.from('invoices').insert([{
+                    debt_id: debt.id,
+                    invoice_code: code,
                     payment_method: 'pix',
-                    amount: amount, 
-                    currency: 'BRL', 
+                    amount: amount,
+                    currency: 'BRL',
                     status: 'pending',
-                    due_date: dt.due_date,
+                    due_date: debt.due_date,
                     bank_account: 'Banco Inter - M1D5'
                 }]);
                 
-                if (error) throw error;
+                if (dbError) throw dbError;
                 
-                alert('✅ Cobrança PIX gerada!\nCódigo: ' + code);
-                fecharModal();
+                const resp = await fetch(`${WORKER_URL}/create-pix`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        payerName: payerName,
+                        payerDocument: payerDoc,
+                        description: `Cobrança PIX ${code} - M1D5`
+                    })
+                });
+                
+                const data = await resp.json();
+                
+                if (!resp.ok) throw new Error(data.error || 'Erro ao gerar PIX');
+                
+                if (data.linkPagamento) {
+                    await db.from('invoices').update({
+                        invoice_url: data.linkPagamento,
+                        inter_cobranca_id: data.codigoCobranca
+                    }).eq('invoice_code', code);
+                }
+                
+                const html = `
+                    <h2>✅ PIX Gerado com Sucesso!</h2>
+                    <div class="success-msg">
+                        ✅ Código PIX criado!<br>
+                        Código: <strong>${code}</strong>
+                    </div>
+                    
+                    ${data.pixCode ? `
+                    <div class="pix-qr-container">
+                        <h3>📱 Escaneie o QR Code</h3>
+                        <img src="data:image/png;base64,${data.pixCode}" alt="QR Code PIX">
+                        <p style="color:#718096; font-size:0.9em;">Abra o app do seu banco e escaneie o QR Code</p>
+                    </div>` : ''}
+                    
+                    ${data.pixPayload ? `
+                    <div class="invoice-box" style="background:#d1fae5; border-color:#10b981;">
+                        <h3>💠 Código PIX Copia e Cola</h3>
+                        <div class="invoice-code" style="font-size:0.85em;">${data.pixPayload}</div>
+                        <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')">📋 Copiar Código PIX</button>
+                    </div>` : ''}
+                    
+                    ${data.linkPagamento ? `
+                    <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6;">
+                        <h3>🔗 Link de Pagamento</h3>
+                        <div class="invoice-code">${data.linkPagamento}</div>
+                        <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar Link</button>
+                        <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')">🌐 Abrir</button>
+                    </div>` : ''}
+                    
+                    <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width: 100%; margin-top: 20px;">✅ Concluir</button>
+                `;
+                document.getElementById('conteudoCobranca').innerHTML = html;
                 carregarCobrancas();
             } catch (e) {
-                alert(' Erro: ' + e.message);
+                const html = `
+                    <h2>❌ Erro ao Gerar PIX</h2>
+                    <div class="error-msg">❌ ${e.message}</div>
+                    <button class="btn" onclick="mostrarFormularioPix()" style="width: 100%; margin-top: 20px;">🔄 Tentar Novamente</button>
+                `;
+                document.getElementById('conteudoCobranca').innerHTML = html;
+            } finally {
+                removerLoading();
             }
         }
 
@@ -596,7 +932,7 @@
                 tbody.innerHTML = '';
                 
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#718096;">Nenhuma cobrança</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nenhuma cobrança</td></tr>';
                     document.getElementById('totalCobrancas').textContent = '0';
                     return;
                 }
@@ -628,23 +964,18 @@
                         </td>
                     </tr>`;
                 }
-            } catch (e) {
-                console.error('Erro ao carregar cobranças:', e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function editarCobranca(id, dueDate) {
             const novaData = prompt('Nova data de vencimento (AAAA-MM-DD):', dueDate);
             if (!novaData) return;
-            
             try {
                 const { error } = await db.from('invoices').update({ due_date: novaData }).eq('id', id);
                 if (error) throw error;
                 alert('✅ Cobrança atualizada!');
                 carregarCobrancas();
-            } catch (e) {
-                alert('❌ Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         async function excluirCobranca(id) {
@@ -654,9 +985,7 @@
                 if (error) throw error;
                 alert('✅ Cobrança excluída!');
                 carregarCobrancas();
-            } catch (e) {
-                alert('❌ Erro: ' + e.message);
-            }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         // ============ CONFIG ============
@@ -674,7 +1003,7 @@
             const pixKey = document.getElementById('pixKey').value.trim();
             
             if (!clientId || !clientSecret || !account) { 
-                alert('️ Preencha Client ID, Client Secret e Conta!'); 
+                alert('⚠️ Preencha Client ID, Client Secret e Conta!'); 
                 return; 
             }
             
@@ -684,9 +1013,31 @@
             localStorage.setItem('m1d5_pixKey', pixKey);
             
             const msg = document.getElementById('configMsg');
-            msg.textContent = '✅ Configurações salvas com sucesso!';
+            msg.textContent = '✅ Configurações salvas!';
             msg.style.display = 'block';
             setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        function copiarLink(text) {
+            navigator.clipboard.writeText(text).then(() => alert('✅ Copiado!'));
+        }
+
+        function enviarWhatsApp(nome, link, valor) {
+            const msg = `Olá ${nome}! Segue link para pagamento de ${valor}: ${link}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function mostrarLoading() {
+            const div = document.createElement('div');
+            div.className = 'loading-overlay';
+            div.id = 'loadingOverlay';
+            div.innerHTML = '<div class="spinner"></div><div style="margin-top:15px; color:#FF7A00; font-weight:600;">Processando pagamento...</div>';
+            document.body.appendChild(div);
+        }
+
+        function removerLoading() {
+            const el = document.getElementById('loadingOverlay');
+            if (el) el.remove();
         }
 
         function carregarDados() {
