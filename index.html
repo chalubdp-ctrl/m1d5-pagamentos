@@ -139,7 +139,7 @@
                     <input type="text" id="loginUser" placeholder="Digite seu usuário" required autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <label>🔒 Senha</label>
+                    <label> Senha</label>
                     <input type="password" id="loginPass" placeholder="Digite sua senha" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-login">🔐 Entrar no Sistema</button>
@@ -193,7 +193,7 @@
                         <div class="form-group"><label>E-mail</label><input type="email" id="clientEmail" placeholder="email@exemplo.com"></div>
                         <div class="form-group"><label>Telefone</label><input type="text" id="clientPhone" placeholder="(11) 99999-9999"></div>
                     </div>
-                    <button class="btn" onclick="cadastrarCliente()" id="btnSalvarCliente">💾 Salvar Cliente</button>
+                    <button class="btn" onclick="cadastrarCliente()" id="btnSalvarCliente"> Salvar Cliente</button>
                     <button class="btn btn-edit" onclick="cancelarEdicaoCliente()" id="btnCancelarCliente" style="display:none;">❌ Cancelar</button>
                     <input type="hidden" id="editClientId">
                 </div>
@@ -246,7 +246,7 @@
                     </div>
 
                     <div class="config-box">
-                        <h4>🔑 Credenciais API</h4>
+                        <h4> Credenciais API</h4>
                         <p style="color:#718096; font-size:0.9em; margin-bottom:15px;">Obtenha em: developers.bancointer.com.br</p>
                         <div class="form-group">
                             <label>Client ID</label>
@@ -292,9 +292,9 @@
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const WORKER_URL = 'https://m1d5-inter-api.chalubdp.workers.dev';
 
+        // SISTEMA DE LOGIN
         const USUARIOS = {
-            'admin': 'admin123',
-            'm1d5': 'm1d52024'
+            'M1D5admin': 'RoMa*2026'
         };
 
         window.onload = function() {
@@ -312,6 +312,7 @@
                 localStorage.setItem('usuarioLogado', user);
                 mostrarSistema(user);
             } else {
+                document.getElementById('loginError').textContent = '❌ Usuário ou senha incorretos!';
                 document.getElementById('loginError').style.display = 'block';
                 setTimeout(() => document.getElementById('loginError').style.display = 'none', 3000);
             }
@@ -495,7 +496,7 @@
                 if (dt) {
                     total += parseFloat(dt.amount);
                     const statusClass = dt.status === 'Pago' ? 'badge-pago' : dt.status === 'Vencido' ? 'badge-vencido' : 'badge-pendente';
-                    tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${cn}</td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button><button class="btn btn-small btn-edit" onclick="editarDevedor('${d.id}')">✏️</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">️</button></td></tr>`;
+                    tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${cn}</td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button><button class="btn btn-small btn-edit" onclick="editarDevedor('${d.id}')">✏️</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button></td></tr>`;
                 }
             }
             document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
@@ -599,7 +600,7 @@
                         <h3>🔗 Link de Pagamento</h3>
                         <div class="invoice-code">${data.linkPagamento}</div>
                         <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar</button>
-                        <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')">🌐 Abrir</button>
+                        <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')"> Abrir</button>
                         <button class="btn" onclick="enviarWhatsApp('${d.name}', '${data.linkPagamento}', 'R$ ${amount.toFixed(2)}')">📱 WhatsApp</button>
                     </div>
                     <div class="success-msg">✅ Cobrança registrada no Banco Inter!</div>
@@ -608,7 +609,7 @@
                 document.getElementById('conteudoCobranca').innerHTML = html;
                 carregarCobrancas();
             } catch (e) {
-                alert('❌ Erro: ' + e.message);
+                alert(' Erro: ' + e.message);
             } finally {
                 removerLoading();
             }
