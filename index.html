@@ -91,6 +91,7 @@
         .payment-method-btn .title { font-weight: 700; color: #2d3748; }
         .payment-method-btn .desc { font-size: 0.85em; color: #718096; margin-top: 5px; }
         .section-divider { border-top: 2px solid rgba(255,255,255,0.2); margin: 20px 0; padding-top: 20px; }
+        .alert-info { background: #dbeafe; border: 2px solid #3b82f6; color: #1e40af; padding: 15px; border-radius: 10px; margin: 15px 0; }
     </style>
 </head>
 <body>
@@ -159,7 +160,7 @@
                     <button class="btn" onclick="cadastrarCliente()">💾 Salvar</button>
                 </div>
                 <div class="card">
-                    <h2>📋 Clientes Cadastrados</h2>
+                    <h2> Clientes Cadastrados</h2>
                     <div class="table-container"><table><thead><tr><th>Nome</th><th>Documento</th><th>E-mail</th><th>Telefone</th><th>Ações</th></tr></thead><tbody id="tabelaClientes"></tbody></table></div>
                 </div>
             </div>
@@ -186,14 +187,17 @@
 
             <div id="tab-cobrancas" class="tab-content">
                 <div class="card">
-                    <h2>💳 Cobranças Geradas</h2>
+                    <h2> Cobranças Geradas</h2>
                     <div class="table-container"><table><thead><tr><th>Código</th><th>Devedor</th><th>Valor</th><th>Método</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaCobrancas"></tbody></table></div>
                 </div>
             </div>
 
             <div id="tab-config" class="tab-content">
                 <div class="card">
-                    <h2>️ Configurações Banco Inter</h2>
+                    <h2>⚙️ Configurações Banco Inter</h2>
+                    <div class="alert-info">
+                        <strong> Dica:</strong> Para processar pagamentos reais, configure as credenciais do Banco Inter abaixo.
+                    </div>
                     <div class="form-group"><label>Client ID</label><input type="text" id="interClientId" placeholder="Client ID"></div>
                     <div class="form-group"><label>Client Secret</label><input type="password" id="interClientSecret" placeholder="Client Secret"></div>
                     <div class="form-group"><label>Conta Inter</label><input type="text" id="interAccount" placeholder="Número da conta"></div>
@@ -317,7 +321,7 @@
                 if (error) throw error;
                 alert('✅ Excluído!');
                 carregarClientes();
-            } catch (e) { alert('❌ Erro: ' + e.message); }
+            } catch (e) { alert(' Erro: ' + e.message); }
         }
 
         async function cadastrarDevedor() {
@@ -366,7 +370,7 @@
                     if (dt) {
                         total += parseFloat(dt.amount);
                         const statusClass = dt.status === 'Pago' ? 'badge-pago' : 'badge-pendente';
-                        tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${cn}</td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button></td></tr>`;
+                        tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${cn}</td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">️</button></td></tr>`;
                     }
                 }
                 document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
@@ -459,7 +463,7 @@
                         </div>
                     </div>
                     <div class="section-divider"></div>
-                    <h3>👤 Dados do Titular</h3>
+                    <h3> Dados do Titular</h3>
                     <div class="form-group">
                         <label>CPF</label>
                         <input type="text" id="cardCpf" placeholder="000.000.000-00" maxlength="14" oninput="formatarCPF(this)">
@@ -497,7 +501,6 @@
             `;
             document.getElementById('conteudoCobranca').innerHTML = html;
             
-            // Adicionar listener APÓS renderizar
             setTimeout(() => {
                 const selectParcelas = document.getElementById('cardInstallments');
                 if (selectParcelas) {
@@ -564,62 +567,106 @@
             const cardCpf = document.getElementById('cardCpf').value.replace(/\D/g, '');
             const cardEmail = document.getElementById('cardEmail').value.trim();
             const cardPhone = document.getElementById('cardPhone').value.replace(/\D/g, '');
-            if (!cardNumber || cardNumber.length < 13) { alert('⚠️ Número do cartão inválido!'); return; }
+            
+            if (!cardNumber || cardNumber.length < 13) { alert('️ Número do cartão inválido!'); return; }
             if (!cardName) { alert('️ Preencha o nome!'); return; }
-            if (!cardExpiry) { alert('️ Validade inválida!'); return; }
+            if (!cardExpiry) { alert('⚠️ Validade inválida!'); return; }
             if (!cardCvv) { alert('⚠️ CVV inválido!'); return; }
             if (!cardCpf || cardCpf.length < 11) { alert('⚠️ CPF inválido!'); return; }
             if (!cardEmail) { alert('⚠️ E-mail inválido!'); return; }
+            
             const code = 'M1D5-' + Date.now().toString().slice(-8);
             mostrarLoading();
+            
             try {
+                // Salvar no banco primeiro
                 const { error: dbError } = await db.from('invoices').insert([{
                     debt_id: debt.id, invoice_code: code, payment_method: 'cartao',
                     amount: amount, currency: 'BRL', status: 'pending',
                     due_date: debt.due_date, installments: parseInt(installments),
                     bank_account: 'Banco Inter - M1D5'
                 }]);
+                
                 if (dbError) throw dbError;
-                const resp = await fetch(`${WORKER_URL}/create-charge`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        amount: amount, dueDate: debt.due_date,
-                        payerName: debtor.name, payerDocument: debtor.document || cardCpf,
-                        payerEmail: cardEmail, description: `Cobrança ${code}`,
-                        installments: installments, cardNumber: cardNumber,
-                        cardName: cardName, cardExpiry: cardExpiry,
-                        cardCvv: cardCvv, cardCpf: cardCpf
-                    })
-                });
-                const data = await resp.json();
-                if (!resp.ok) throw new Error(data.error || 'Erro ao processar');
-                if (data.linkPagamento) {
-                    await db.from('invoices').update({
-                        invoice_url: data.linkPagamento,
-                        inter_cobranca_id: data.codigoCobranca
-                    }).eq('invoice_code', code);
+                
+                // Tentar chamar o Worker
+                try {
+                    const resp = await fetch(`${WORKER_URL}/create-charge`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: amount, dueDate: debt.due_date,
+                            payerName: debtor.name, payerDocument: debtor.document || cardCpf,
+                            payerEmail: cardEmail, description: `Cobrança ${code}`,
+                            installments: installments, cardNumber: cardNumber,
+                            cardName: cardName, cardExpiry: cardExpiry,
+                            cardCvv: cardCvv, cardCpf: cardCpf
+                        })
+                    });
+                    
+                    const contentType = resp.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        const text = await resp.text();
+                        console.error('Resposta não é JSON:', text);
+                        throw new Error('Worker retornou erro. Verifique as credenciais.');
+                    }
+                    
+                    const data = await resp.json();
+                    
+                    if (!resp.ok) throw new Error(data.error || 'Erro ao processar');
+                    
+                    if (data.linkPagamento) {
+                        await db.from('invoices').update({
+                            invoice_url: data.linkPagamento,
+                            inter_cobranca_id: data.codigoCobranca
+                        }).eq('invoice_code', code);
+                    }
+                    
+                    const html = `
+                        <h2>✅ Pagamento Processado!</h2>
+                        <div class="success-msg">✅ Cobrança registrada!<br>Código: <strong>${code}</strong></div>
+                        <div class="invoice-box">
+                            <h3>📋 Detalhes</h3>
+                            <p><strong>Devedor:</strong> ${debtor.name}</p>
+                            <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+                            <p><strong>Parcelas:</strong> ${installments}x</p>
+                        </div>
+                        ${data.linkPagamento ? `
+                        <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6;">
+                            <h3>🔗 Link</h3>
+                            <div class="invoice-code">${data.linkPagamento}</div>
+                            <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar</button>
+                            <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')"> Abrir</button>
+                        </div>` : ''}
+                        <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
+                    `;
+                    document.getElementById('conteudoCobranca').innerHTML = html;
+                    carregarCobrancas();
+                    
+                } catch (workerError) {
+                    // Worker falhou, mas cobrança foi salva no banco
+                    console.error('Erro no Worker:', workerError);
+                    
+                    const html = `
+                        <h2>✅ Cobrança Registrada!</h2>
+                        <div class="success-msg">✅ Cobrança salva no sistema!<br>Código: <strong>${code}</strong></div>
+                        <div class="error-msg" style="margin-top:15px;">
+                            ⚠️ <strong>Atenção:</strong> O Worker não está configurado corretamente.<br>
+                            A cobrança foi registrada no banco de dados, mas o link de pagamento não foi gerado.<br><br>
+                            Para processar pagamentos reais, configure as credenciais do Banco Inter no Cloudflare Worker.
+                        </div>
+                        <div class="invoice-box">
+                            <h3> Detalhes</h3>
+                            <p><strong>Devedor:</strong> ${debtor.name}</p>
+                            <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+                            <p><strong>Parcelas:</strong> ${installments}x</p>
+                            <p><strong>Código:</strong> ${code}</p>
+                        </div>
+                        <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
+                    `;
+                    document.getElementById('conteudoCobranca').innerHTML = html;
+                    carregarCobrancas();
                 }
-                const html = `
-                    <h2>✅ Pagamento Processado!</h2>
-                    <div class="success-msg">✅ Cobrança registrada!<br>Código: <strong>${code}</strong></div>
-                    <div class="invoice-box">
-                        <h3>📋 Detalhes</h3>
-                        <p><strong>Devedor:</strong> ${debtor.name}</p>
-                        <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
-                        <p><strong>Parcelas:</strong> ${installments}x</p>
-                    </div>
-                    ${data.linkPagamento ? `
-                    <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6;">
-                        <h3>🔗 Link</h3>
-                        <div class="invoice-code">${data.linkPagamento}</div>
-                        <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar</button>
-                        <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')">🌐 Abrir</button>
-                    </div>` : ''}
-                    <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
-                `;
-                document.getElementById('conteudoCobranca').innerHTML = html;
-                carregarCobrancas();
             } catch (e) {
                 alert('❌ Erro: ' + e.message);
             } finally {
@@ -630,7 +677,7 @@
         function mostrarFormularioPix() {
             const { debtor, debt, amount } = currentDebtData;
             const html = `
-                <h2> Pagamento via PIX</h2>
+                <h2>📱 Pagamento via PIX</h2>
                 <div class="invoice-box">
                     <h3>📋 Dados</h3>
                     <p><strong>Devedor:</strong> ${debtor.name}</p>
@@ -645,7 +692,7 @@
                     <input type="text" id="pixPayerDoc" value="${debtor.document || ''}" placeholder="000.000.000-00" maxlength="18">
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn btn-pix" onclick="processarPagamentoPix()" style="flex:1; padding:15px;"> Gerar PIX</button>
+                    <button class="btn btn-pix" onclick="processarPagamentoPix()" style="flex:1; padding:15px;">📱 Gerar PIX</button>
                     <button class="btn btn-edit" onclick="gerarCobranca('${currentDebtorId}')" style="padding:15px;">← Voltar</button>
                 </div>
             `;
@@ -660,6 +707,7 @@
             if (!payerDoc || payerDoc.length < 11) { alert('⚠️ CPF/CNPJ inválido!'); return; }
             const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
             mostrarLoading();
+            
             try {
                 const { error: dbError } = await db.from('invoices').insert([{
                     debt_id: debt.id, invoice_code: code, payment_method: 'pix',
@@ -667,42 +715,69 @@
                     due_date: debt.due_date, bank_account: 'Banco Inter - M1D5'
                 }]);
                 if (dbError) throw dbError;
-                const resp = await fetch(`${WORKER_URL}/create-pix`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        amount: amount, payerName: payerName,
-                        payerDocument: payerDoc, description: `Cobrança PIX ${code}`
-                    })
-                });
-                const data = await resp.json();
-                if (!resp.ok) throw new Error(data.error || 'Erro ao gerar PIX');
-                if (data.linkPagamento) {
-                    await db.from('invoices').update({
-                        invoice_url: data.linkPagamento,
-                        inter_cobranca_id: data.codigoCobranca
-                    }).eq('invoice_code', code);
+                
+                try {
+                    const resp = await fetch(`${WORKER_URL}/create-pix`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: amount, payerName: payerName,
+                            payerDocument: payerDoc, description: `Cobrança PIX ${code}`
+                        })
+                    });
+                    
+                    const contentType = resp.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        const text = await resp.text();
+                        console.error('Resposta não é JSON:', text);
+                        throw new Error('Worker retornou erro.');
+                    }
+                    
+                    const data = await resp.json();
+                    if (!resp.ok) throw new Error(data.error || 'Erro ao gerar PIX');
+                    
+                    if (data.linkPagamento) {
+                        await db.from('invoices').update({
+                            invoice_url: data.linkPagamento,
+                            inter_cobranca_id: data.codigoCobranca
+                        }).eq('invoice_code', code);
+                    }
+                    
+                    const html = `
+                        <h2>✅ PIX Gerado!</h2>
+                        <div class="success-msg">✅ Código PIX criado!<br>Código: <strong>${code}</strong></div>
+                        ${data.pixCode ? `
+                        <div class="pix-qr-container">
+                            <h3> QR Code</h3>
+                            <img src="data:image/png;base64,${data.pixCode}" alt="QR Code">
+                        </div>` : ''}
+                        ${data.pixPayload ? `
+                        <div class="invoice-box" style="background:#d1fae5; border-color:#10b981;">
+                            <h3>💠 Código PIX</h3>
+                            <div class="invoice-code" style="font-size:0.85em;">${data.pixPayload}</div>
+                            <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')">📋 Copiar</button>
+                        </div>` : ''}
+                        <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
+                    `;
+                    document.getElementById('conteudoCobranca').innerHTML = html;
+                    carregarCobrancas();
+                    
+                } catch (workerError) {
+                    console.error('Erro no Worker:', workerError);
+                    const html = `
+                        <h2>✅ Cobrança PIX Registrada!</h2>
+                        <div class="success-msg">✅ Cobrança salva no sistema!<br>Código: <strong>${code}</strong></div>
+                        <div class="error-msg" style="margin-top:15px;">
+                            ⚠️ <strong>Atenção:</strong> O Worker não está configurado.<br>
+                            Para gerar QR Code PIX, configure o Cloudflare Worker.
+                        </div>
+                        <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
+                    `;
+                    document.getElementById('conteudoCobranca').innerHTML = html;
+                    carregarCobrancas();
                 }
-                const html = `
-                    <h2>✅ PIX Gerado!</h2>
-                    <div class="success-msg">✅ Código PIX criado!<br>Código: <strong>${code}</strong></div>
-                    ${data.pixCode ? `
-                    <div class="pix-qr-container">
-                        <h3>📱 QR Code</h3>
-                        <img src="data:image/png;base64,${data.pixCode}" alt="QR Code">
-                    </div>` : ''}
-                    ${data.pixPayload ? `
-                    <div class="invoice-box" style="background:#d1fae5; border-color:#10b981;">
-                        <h3>💠 Código PIX</h3>
-                        <div class="invoice-code" style="font-size:0.85em;">${data.pixPayload}</div>
-                        <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')"> Copiar</button>
-                    </div>` : ''}
-                    <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
-                `;
-                document.getElementById('conteudoCobranca').innerHTML = html;
-                carregarCobrancas();
             } catch (e) {
-                alert('❌ Erro: ' + e.message);
+                alert(' Erro: ' + e.message);
             } finally {
                 removerLoading();
             }
@@ -737,8 +812,8 @@
                         <td>${methodText}</td>
                         <td><span class="badge ${statusClass}">${inv.status}</span></td>
                         <td>
-                            <button class="btn btn-small btn-edit" onclick="editarCobranca('${inv.id}', '${inv.due_date || ''}')">️</button>
-                            <button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">🗑️</button>
+                            <button class="btn btn-small btn-edit" onclick="editarCobranca('${inv.id}', '${inv.due_date || ''}')">✏️</button>
+                            <button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">️</button>
                         </td>
                     </tr>`;
                 }
