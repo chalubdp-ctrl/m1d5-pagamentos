@@ -148,7 +148,7 @@
 
             <div id="tab-clientes" class="tab-content active">
                 <div class="card">
-                    <h2>📝 Cadastrar Cliente</h2>
+                    <h2> Cadastrar Cliente</h2>
                     <div class="form-row">
                         <div class="form-group"><label>Nome *</label><input type="text" id="clientName" placeholder="Nome completo"></div>
                         <div class="form-group"><label>CNPJ/CPF</label><input type="text" id="clientDoc" placeholder="000.000.000-00"></div>
@@ -160,7 +160,7 @@
                     <button class="btn" onclick="cadastrarCliente()">💾 Salvar</button>
                 </div>
                 <div class="card">
-                    <h2> Clientes Cadastrados</h2>
+                    <h2>📋 Clientes Cadastrados</h2>
                     <div class="table-container"><table><thead><tr><th>Nome</th><th>Documento</th><th>E-mail</th><th>Telefone</th><th>Ações</th></tr></thead><tbody id="tabelaClientes"></tbody></table></div>
                 </div>
             </div>
@@ -180,14 +180,14 @@
                     <button class="btn" onclick="cadastrarDevedor()">✅ Salvar</button>
                 </div>
                 <div class="card">
-                    <h2>📊 Devedores</h2>
+                    <h2> Devedores</h2>
                     <div class="table-container"><table><thead><tr><th>Devedor</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
                 </div>
             </div>
 
             <div id="tab-cobrancas" class="tab-content">
                 <div class="card">
-                    <h2> Cobranças Geradas</h2>
+                    <h2>💳 Cobranças Geradas</h2>
                     <div class="table-container"><table><thead><tr><th>Código</th><th>Devedor</th><th>Valor</th><th>Método</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaCobrancas"></tbody></table></div>
                 </div>
             </div>
@@ -196,7 +196,7 @@
                 <div class="card">
                     <h2>⚙️ Configurações Banco Inter</h2>
                     <div class="alert-info">
-                        <strong> Dica:</strong> Para processar pagamentos reais, configure as credenciais do Banco Inter abaixo.
+                        <strong>💡 Dica:</strong> Para processar pagamentos reais, configure as credenciais do Banco Inter abaixo.
                     </div>
                     <div class="form-group"><label>Client ID</label><input type="text" id="interClientId" placeholder="Client ID"></div>
                     <div class="form-group"><label>Client Secret</label><input type="password" id="interClientSecret" placeholder="Client Secret"></div>
@@ -308,7 +308,7 @@
                 }
                 document.getElementById('totalClientes').textContent = data.length;
                 data.forEach(c => {
-                    tbody.innerHTML += `<tr><td><strong>${c.name}</strong></td><td>${c.document || '-'}</td><td>${c.email || '-'}</td><td>${c.phone || '-'}</td><td><button class="btn btn-small btn-delete" onclick="excluirCliente('${c.id}')">️</button></td></tr>`;
+                    tbody.innerHTML += `<tr><td><strong>${c.name}</strong></td><td>${c.document || '-'}</td><td>${c.email || '-'}</td><td>${c.phone || '-'}</td><td><button class="btn btn-small btn-delete" onclick="excluirCliente('${c.id}')">🗑️</button></td></tr>`;
                     select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
                 });
             } catch (e) { console.error(e); }
@@ -321,7 +321,7 @@
                 if (error) throw error;
                 alert('✅ Excluído!');
                 carregarClientes();
-            } catch (e) { alert(' Erro: ' + e.message); }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         async function cadastrarDevedor() {
@@ -331,10 +331,10 @@
             const amountStr = document.getElementById('debtAmount').value.trim();
             const due = document.getElementById('debtDueDate').value;
             const amount = parseFloat(amountStr.replace(',', '.'));
-            if (!client_id) { alert('⚠️ Selecione um cliente!'); return; }
+            if (!client_id) { alert('️ Selecione um cliente!'); return; }
             if (!name) { alert('⚠️ Preencha o nome!'); return; }
             if (!amount || amount <= 0) { alert('⚠️ Valor inválido!'); return; }
-            if (!due) { alert('⚠️ Preencha a data!'); return; }
+            if (!due) { alert('️ Preencha a data!'); return; }
             try {
                 const { data: debtorData, error: e1 } = await db.from('debtors').insert([{ client_id: client_id, name: name, document: doc || null }]).select();
                 if (e1) throw e1;
@@ -411,7 +411,7 @@
                             <div class="desc">Até 12x</div>
                         </div>
                         <div class="payment-method-btn" onclick="mostrarFormularioPix()">
-                            <div class="icon"></div>
+                            <div class="icon">📱</div>
                             <div class="title">PIX</div>
                             <div class="desc">Pagamento instantâneo</div>
                         </div>
@@ -430,56 +430,56 @@
                 parcelasHtml += `<option value="${i}">${i}x de R$ ${valorParcela.toFixed(2)} (sem juros)</option>`;
             }
             const html = `
-                <h2>💳 Pagamento com Cartão</h2>
-                <div class="invoice-box">
+                <h2 style="margin-bottom: 20px;">💳 Pagamento com Cartão</h2>
+                <div class="invoice-box" style="margin-bottom: 20px;">
                     <h3>📋 Dados</h3>
                     <p><strong>Devedor:</strong> ${debtor.name}</p>
                     <p><strong>Valor Total:</strong> R$ ${amount.toFixed(2)}</p>
                 </div>
-                <div class="card-form">
-                    <h3>💳 Dados do Cartão</h3>
-                    <div class="form-group">
-                        <label>📊 Número de Parcelas</label>
-                        <select id="cardInstallments">
+                <div class="card-form" style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px;">💳 Dados do Cartão</h3>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="margin-bottom: 8px;">📊 Número de Parcelas</label>
+                        <select id="cardInstallments" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 1em;">
                             ${parcelasHtml}
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Número do Cartão</label>
-                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatarNumeroCartao(this)">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="margin-bottom: 8px;">Número do Cartão</label>
+                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatarNumeroCartao(this)" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                     </div>
-                    <div class="form-group">
-                        <label>Nome no Cartão</label>
-                        <input type="text" id="cardName" placeholder="NOME NO CARTÃO">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="margin-bottom: 8px;">Nome no Cartão</label>
+                        <input type="text" id="cardName" placeholder="NOME NO CARTÃO" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Validade</label>
-                            <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5" oninput="formatarValidade(this)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="margin-bottom: 8px; display: block;">Validade</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5" oninput="formatarValidade(this)" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                         </div>
-                        <div class="form-group">
-                            <label>CVV</label>
-                            <input type="text" id="cardCvv" placeholder="123" maxlength="4">
+                        <div>
+                            <label style="margin-bottom: 8px; display: block;">CVV</label>
+                            <input type="text" id="cardCvv" placeholder="123" maxlength="4" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                         </div>
                     </div>
-                    <div class="section-divider"></div>
-                    <h3> Dados do Titular</h3>
-                    <div class="form-group">
-                        <label>CPF</label>
-                        <input type="text" id="cardCpf" placeholder="000.000.000-00" maxlength="14" oninput="formatarCPF(this)">
+                    <div style="border-top: 2px solid rgba(255,255,255,0.2); margin: 20px 0; padding-top: 20px;"></div>
+                    <h3 style="margin-bottom: 20px;">👤 Dados do Titular</h3>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="margin-bottom: 8px;">CPF</label>
+                        <input type="text" id="cardCpf" placeholder="000.000.000-00" maxlength="14" oninput="formatarCPF(this)" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                     </div>
-                    <div class="form-group">
-                        <label>E-mail</label>
-                        <input type="email" id="cardEmail" placeholder="email@exemplo.com">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="margin-bottom: 8px;">E-mail</label>
+                        <input type="email" id="cardEmail" placeholder="email@exemplo.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                     </div>
-                    <div class="form-group">
-                        <label>Telefone</label>
-                        <input type="text" id="cardPhone" placeholder="(11) 99999-9999" maxlength="15" oninput="formatarTelefone(this)">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="margin-bottom: 8px;">Telefone</label>
+                        <input type="text" id="cardPhone" placeholder="(11) 99999-9999" maxlength="15" oninput="formatarTelefone(this)" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
                     </div>
                 </div>
-                <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6; padding: 20px;">
-                    <h3>💰 Resumo do Pagamento</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6; padding: 20px; margin: 20px 0;">
+                    <h3 style="margin-bottom: 15px;">💰 Resumo do Pagamento</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
                         <div style="text-align: center; padding: 15px; background: white; border-radius: 10px;">
                             <div style="font-size: 0.8em; color: #718096; margin-bottom: 5px;">VALOR TOTAL</div>
                             <div style="font-size: 1.3em; font-weight: 800; color: #FF7A00;" id="resumoTotal">R$ ${amount.toFixed(2)}</div>
@@ -494,9 +494,9 @@
                         </div>
                     </div>
                 </div>
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn btn-success" onclick="processarPagamentoCartao()" style="flex:1; padding:15px;">✅ Processar Pagamento</button>
-                    <button class="btn btn-edit" onclick="gerarCobranca('${currentDebtorId}')" style="padding:15px;">← Voltar</button>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-success" onclick="processarPagamentoCartao()" style="flex: 1; padding: 15px; font-size: 1.1em;">✅ Processar Pagamento</button>
+                    <button class="btn btn-edit" onclick="gerarCobranca('${currentDebtorId}')" style="padding: 15px;">← Voltar</button>
                 </div>
             `;
             document.getElementById('conteudoCobranca').innerHTML = html;
@@ -568,18 +568,17 @@
             const cardEmail = document.getElementById('cardEmail').value.trim();
             const cardPhone = document.getElementById('cardPhone').value.replace(/\D/g, '');
             
-            if (!cardNumber || cardNumber.length < 13) { alert('️ Número do cartão inválido!'); return; }
+            if (!cardNumber || cardNumber.length < 13) { alert('⚠️ Número do cartão inválido!'); return; }
             if (!cardName) { alert('️ Preencha o nome!'); return; }
-            if (!cardExpiry) { alert('⚠️ Validade inválida!'); return; }
+            if (!cardExpiry) { alert('️ Validade inválida!'); return; }
             if (!cardCvv) { alert('⚠️ CVV inválido!'); return; }
-            if (!cardCpf || cardCpf.length < 11) { alert('⚠️ CPF inválido!'); return; }
+            if (!cardCpf || cardCpf.length < 11) { alert('️ CPF inválido!'); return; }
             if (!cardEmail) { alert('⚠️ E-mail inválido!'); return; }
             
             const code = 'M1D5-' + Date.now().toString().slice(-8);
             mostrarLoading();
             
             try {
-                // Salvar no banco primeiro
                 const { error: dbError } = await db.from('invoices').insert([{
                     debt_id: debt.id, invoice_code: code, payment_method: 'cartao',
                     amount: amount, currency: 'BRL', status: 'pending',
@@ -589,7 +588,6 @@
                 
                 if (dbError) throw dbError;
                 
-                // Tentar chamar o Worker
                 try {
                     const resp = await fetch(`${WORKER_URL}/create-charge`, {
                         method: 'POST',
@@ -644,7 +642,6 @@
                     carregarCobrancas();
                     
                 } catch (workerError) {
-                    // Worker falhou, mas cobrança foi salva no banco
                     console.error('Erro no Worker:', workerError);
                     
                     const html = `
@@ -656,7 +653,7 @@
                             Para processar pagamentos reais, configure as credenciais do Banco Inter no Cloudflare Worker.
                         </div>
                         <div class="invoice-box">
-                            <h3> Detalhes</h3>
+                            <h3>📋 Detalhes</h3>
                             <p><strong>Devedor:</strong> ${debtor.name}</p>
                             <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
                             <p><strong>Parcelas:</strong> ${installments}x</p>
@@ -677,7 +674,7 @@
         function mostrarFormularioPix() {
             const { debtor, debt, amount } = currentDebtData;
             const html = `
-                <h2>📱 Pagamento via PIX</h2>
+                <h2> Pagamento via PIX</h2>
                 <div class="invoice-box">
                     <h3>📋 Dados</h3>
                     <p><strong>Devedor:</strong> ${debtor.name}</p>
@@ -748,7 +745,7 @@
                         <div class="success-msg">✅ Código PIX criado!<br>Código: <strong>${code}</strong></div>
                         ${data.pixCode ? `
                         <div class="pix-qr-container">
-                            <h3> QR Code</h3>
+                            <h3>📱 QR Code</h3>
                             <img src="data:image/png;base64,${data.pixCode}" alt="QR Code">
                         </div>` : ''}
                         ${data.pixPayload ? `
@@ -813,7 +810,7 @@
                         <td><span class="badge ${statusClass}">${inv.status}</span></td>
                         <td>
                             <button class="btn btn-small btn-edit" onclick="editarCobranca('${inv.id}', '${inv.due_date || ''}')">✏️</button>
-                            <button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">️</button>
+                            <button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">🗑️</button>
                         </td>
                     </tr>`;
                 }
