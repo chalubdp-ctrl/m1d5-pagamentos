@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M1D5 - Sistema de Pagamentos</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏦</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #fff; }
@@ -67,8 +67,8 @@
         .badge-pendente { background: #fef5e7; color: #d97706; }
         .badge-pago { background: #d1fae5; color: #059669; }
         
-        .tabs { display: flex; gap: 8px; margin-bottom: 25px; background: white; padding: 10px; border-radius: 16px; }
-        .tab { padding: 12px 22px; cursor: pointer; border-radius: 10px; background: #f7fafc; font-weight: 700; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; background: white; padding: 10px; border-radius: 16px; flex-wrap: wrap; }
+        .tab { padding: 12px 22px; cursor: pointer; border-radius: 10px; background: #f7fafc; font-weight: 700; color: #4a5568; }
         .tab.active { background: linear-gradient(135deg, #FF7A00 0%, #FFB347 100%); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -82,10 +82,6 @@
         .invoice-code { background: white; padding: 12px; border-radius: 8px; margin: 10px 0; font-family: monospace; border: 2px dashed #FF7A00; text-align: center; }
         .copy-btn { background: #4299e1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
         .success-msg { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 10px; margin: 15px 0; }
-        
-        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top: 5px solid #FF7A00; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -100,14 +96,14 @@
             <div class="login-error" id="loginError"></div>
             <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label>Usuário</label>
+                    <label> Usuário</label>
                     <input type="text" id="loginUser" placeholder="Digite seu usuário" required>
                 </div>
                 <div class="form-group">
-                    <label>Senha</label>
+                    <label> Senha</label>
                     <input type="password" id="loginPass" placeholder="Digite sua senha" required>
                 </div>
-                <button type="submit" class="btn-login">Entrar no Sistema</button>
+                <button type="submit" class="btn-login"> Entrar no Sistema</button>
             </form>
         </div>
     </div>
@@ -122,8 +118,8 @@
                         <div class="subtitle">Sistema de Pagamentos - Banco Inter</div>
                     </div>
                     <div class="user-info">
-                        <span> Usuário: <strong id="currentUser">-</strong></span>
-                        <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+                        <span>👤 Usuário: <strong id="currentUser">-</strong></span>
+                        <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
                     </div>
                 </div>
             </div>
@@ -136,10 +132,10 @@
             </div>
 
             <div class="tabs">
-                <button class="tab active" onclick="showTab('clientes', this)">👥 Clientes</button>
+                <button class="tab active" onclick="showTab('clientes', this)"> Clientes</button>
                 <button class="tab" onclick="showTab('devedores', this)">💰 Devedores</button>
                 <button class="tab" onclick="showTab('cobrancas', this)">💳 Cobranças</button>
-                <button class="tab" onclick="showTab('config', this)">️ Config</button>
+                <button class="tab" onclick="showTab('config', this)">⚙️ Config</button>
             </div>
 
             <!-- CLIENTES -->
@@ -157,8 +153,8 @@
                     <button class="btn" onclick="cadastrarCliente()">💾 Salvar</button>
                 </div>
                 <div class="card">
-                    <h2>📋 Clientes</h2>
-                    <div class="table-container"><table><thead><tr><th>Nome</th><th>Documento</th><th>E-mail</th><th>Ações</th></tr></thead><tbody id="tabelaClientes"></tbody></table></div>
+                    <h2>📋 Clientes Cadastrados</h2>
+                    <div class="table-container"><table><thead><tr><th>Nome</th><th>Documento</th><th>E-mail</th><th>Telefone</th><th>Ações</th></tr></thead><tbody id="tabelaClientes"></tbody></table></div>
                 </div>
             </div>
 
@@ -179,14 +175,14 @@
                 </div>
                 <div class="card">
                     <h2>📊 Devedores</h2>
-                    <div class="table-container"><table><thead><tr><th>Devedor</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
+                    <div class="table-container"><table><thead><tr><th>Devedor</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
                 </div>
             </div>
 
             <!-- COBRANÇAS -->
             <div id="tab-cobrancas" class="tab-content">
                 <div class="card">
-                    <h2>💳 Cobranças</h2>
+                    <h2>💳 Cobranças Geradas</h2>
                     <div class="table-container"><table><thead><tr><th>Código</th><th>Devedor</th><th>Valor</th><th>Método</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaCobrancas"></tbody></table></div>
                 </div>
             </div>
@@ -194,12 +190,12 @@
             <!-- CONFIG -->
             <div id="tab-config" class="tab-content">
                 <div class="card">
-                    <h2>⚙️ Configurações</h2>
+                    <h2>⚙️ Configurações Banco Inter</h2>
                     <div class="form-group"><label>Client ID</label><input type="text" id="interClientId" placeholder="Client ID"></div>
                     <div class="form-group"><label>Client Secret</label><input type="password" id="interClientSecret" placeholder="Client Secret"></div>
                     <div class="form-group"><label>Conta Inter</label><input type="text" id="interAccount" placeholder="Número da conta"></div>
                     <div class="form-group"><label>Chave PIX</label><input type="text" id="pixKey" placeholder="Chave PIX"></div>
-                    <button class="btn" onclick="salvarConfig()">💾 Salvar Configurações</button>
+                    <button class="btn" onclick="salvarConfig()">💾 Salvar</button>
                     <div class="success-msg" id="configMsg" style="display:none;"></div>
                 </div>
             </div>
@@ -224,9 +220,7 @@
 
         window.addEventListener('load', function() {
             const usuarioSalvo = localStorage.getItem('usuarioLogado');
-            if (usuarioSalvo) {
-                mostrarSistema(usuarioSalvo);
-            }
+            if (usuarioSalvo) mostrarSistema(usuarioSalvo);
         });
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -243,7 +237,7 @@
                 mostrarSistema(user);
             } else {
                 const errorDiv = document.getElementById('loginError');
-                errorDiv.textContent = 'Usuário ou senha incorretos!';
+                errorDiv.textContent = ' Usuário ou senha incorretos!';
                 errorDiv.style.display = 'block';
                 setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
             }
@@ -274,80 +268,130 @@
         function fecharModal() { document.getElementById('modalCobranca').style.display = 'none'; }
         window.onclick = function(e) { if (e.target == document.getElementById('modalCobranca')) fecharModal(); }
 
-        // CLIENTES - CORRIGIDO
+        // ============ CLIENTES ============
         async function cadastrarCliente() {
             const name = document.getElementById('clientName').value.trim();
             const doc = document.getElementById('clientDoc').value.trim();
             const email = document.getElementById('clientEmail').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
             
-            if (!name) { alert('Preencha o nome!'); return; }
+            if (!name) { alert('⚠️ Preencha o nome!'); return; }
             
-            // Inserir sem a coluna 'document' se não existir
-            const { error } = await db.from('clients').insert([{ 
-                name: name,
-                cpf_cnpj: doc || null,  // Usar cpf_cnpj em vez de document
-                email: email || null,
-                phone: phone || null
-            }]);
-            
-            if (error) { 
-                alert('Erro: ' + error.message); 
-                return; 
+            try {
+                const { error } = await db.from('clients').insert([{ 
+                    name: name,
+                    document: doc || null,
+                    email: email || null,
+                    phone: phone || null
+                }]);
+                
+                if (error) throw error;
+                
+                alert('✅ Cliente cadastrado com sucesso!');
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientDoc').value = '';
+                document.getElementById('clientEmail').value = '';
+                document.getElementById('clientPhone').value = '';
+                carregarClientes();
+            } catch (e) {
+                alert('❌ Erro ao cadastrar: ' + e.message);
             }
-            
-            alert('✅ Cliente cadastrado!');
-            document.getElementById('clientName').value = '';
-            document.getElementById('clientDoc').value = '';
-            document.getElementById('clientEmail').value = '';
-            document.getElementById('clientPhone').value = '';
-            carregarClientes();
         }
 
         async function carregarClientes() {
-            const { data, error } = await db.from('clients').select('*').order('name');
-            
-            if (error) {
-                console.error('Erro ao carregar clientes:', error);
-                return;
-            }
-            
-            const tbody = document.getElementById('tabelaClientes');
-            const select = document.getElementById('debtorClientSelect');
-            tbody.innerHTML = '';
-            select.innerHTML = '<option value="">Selecione...</option>';
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">Nenhum cliente</td></tr>';
-                document.getElementById('totalClientes').textContent = '0';
-                return;
-            }
-            
-            document.getElementById('totalClientes').textContent = data.length;
-            data.forEach(c => {
-                // Tentar pegar cpf_cnpj ou document
-                const docValue = c.cpf_cnpj || c.document || '-';
+            try {
+                const { data, error } = await db.from('clients').select('*').order('created_at', { ascending: false });
                 
-                tbody.innerHTML += `<tr>
-                    <td><strong>${c.name}</strong></td>
-                    <td>${docValue}</td>
-                    <td>${c.email || '-'}</td>
-                    <td>
-                        <button class="btn btn-small btn-delete" onclick="excluirCliente('${c.id}')">🗑️</button>
-                    </td>
-                </tr>`;
-                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-            });
+                if (error) throw error;
+                
+                const tbody = document.getElementById('tabelaClientes');
+                const select = document.getElementById('debtorClientSelect');
+                tbody.innerHTML = '';
+                select.innerHTML = '<option value="">Selecione um cliente...</option>';
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#718096;">Nenhum cliente cadastrado</td></tr>';
+                    document.getElementById('totalClientes').textContent = '0';
+                    return;
+                }
+                
+                document.getElementById('totalClientes').textContent = data.length;
+                data.forEach(c => {
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${c.name}</strong></td>
+                        <td>${c.document || '-'}</td>
+                        <td>${c.email || '-'}</td>
+                        <td>${c.phone || '-'}</td>
+                        <td>
+                            <button class="btn btn-small btn-edit" onclick="editarCliente('${c.id}', '${c.name}', '${c.document || ''}', '${c.email || ''}', '${c.phone || ''}')">✏️</button>
+                            <button class="btn btn-small btn-delete" onclick="excluirCliente('${c.id}')">🗑️</button>
+                        </td>
+                    </tr>`;
+                    select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                });
+            } catch (e) {
+                console.error('Erro ao carregar clientes:', e);
+            }
+        }
+
+        function editarCliente(id, name, doc, email, phone) {
+            document.getElementById('clientName').value = name;
+            document.getElementById('clientDoc').value = doc;
+            document.getElementById('clientEmail').value = email;
+            document.getElementById('clientPhone').value = phone;
+            
+            // Substituir o botão de salvar por atualizar
+            const btn = document.querySelector('#tab-clientes .btn');
+            btn.textContent = '💾 Atualizar';
+            btn.onclick = function() { atualizarCliente(id); };
+        }
+
+        async function atualizarCliente(id) {
+            const name = document.getElementById('clientName').value.trim();
+            const doc = document.getElementById('clientDoc').value.trim();
+            const email = document.getElementById('clientEmail').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+            
+            try {
+                const { error } = await db.from('clients').update({
+                    name: name,
+                    document: doc || null,
+                    email: email || null,
+                    phone: phone || null
+                }).eq('id', id);
+                
+                if (error) throw error;
+                
+                alert('✅ Cliente atualizado!');
+                document.getElementById('clientName').value = '';
+                document.getElementById('clientDoc').value = '';
+                document.getElementById('clientEmail').value = '';
+                document.getElementById('clientPhone').value = '';
+                
+                const btn = document.querySelector('#tab-clientes .btn');
+                btn.textContent = '💾 Salvar';
+                btn.onclick = cadastrarCliente;
+                
+                carregarClientes();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
         async function excluirCliente(id) {
-            if (!confirm('Excluir cliente?')) return;
-            const { error } = await db.from('clients').delete().eq('id', id);
-            if (error) { alert('Erro: ' + error.message); return; }
-            carregarClientes();
+            if (!confirm('️ Excluir este cliente? Todas as dívidas vinculadas também serão excluídas.')) return;
+            
+            try {
+                const { error } = await db.from('clients').delete().eq('id', id);
+                if (error) throw error;
+                alert('✅ Cliente excluído!');
+                carregarClientes();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
-        // DEVEDORES
+        // ============ DEVEDORES ============
         async function cadastrarDevedor() {
             const client_id = document.getElementById('debtorClientSelect').value;
             const name = document.getElementById('debtorName').value.trim();
@@ -356,195 +400,236 @@
             const due = document.getElementById('debtDueDate').value;
             const amount = parseFloat(amountStr.replace(',', '.'));
             
-            if (!client_id || !name || !amount || !due) { alert('Preencha todos os campos!'); return; }
+            if (!client_id) { alert('⚠️ Selecione um cliente!'); return; }
+            if (!name) { alert('️ Preencha o nome!'); return; }
+            if (!amount || amount <= 0) { alert('⚠️ Valor inválido!'); return; }
+            if (!due) { alert('⚠️ Preencha a data!'); return; }
             
-            const { data: debtorData, error: e1 } = await db.from('debtors').insert([{ 
-                client_id: client_id, 
-                name: name, 
-                cpf_cnpj: doc || null 
-            }]).select();
-            
-            if (e1) { alert('Erro: ' + e1.message); return; }
-            
-            const { error: e2 } = await db.from('debts').insert([{ 
-                debtor_id: debtorData[0].id, 
-                original_amount: amount, 
-                amount: amount, 
-                currency: 'BRL', 
-                due_date: due, 
-                status: 'Pendente' 
-            }]);
-            
-            if (e2) { alert('Erro: ' + e2.message); return; }
-            
-            alert('✅ Devedor cadastrado!');
-            document.getElementById('debtorName').value = '';
-            document.getElementById('debtorDoc').value = '';
-            document.getElementById('debtAmount').value = '';
-            document.getElementById('debtDueDate').value = '';
-            carregarDevedores();
+            try {
+                const { data: debtorData, error: e1 } = await db.from('debtors').insert([{ 
+                    client_id: client_id, 
+                    name: name, 
+                    document: doc || null 
+                }]).select();
+                
+                if (e1) throw e1;
+                
+                const { error: e2 } = await db.from('debts').insert([{ 
+                    debtor_id: debtorData[0].id, 
+                    original_amount: amount, 
+                    amount: amount, 
+                    currency: 'BRL', 
+                    due_date: due, 
+                    status: 'Pendente' 
+                }]);
+                
+                if (e2) throw e2;
+                
+                alert('✅ Devedor e dívida cadastrados!');
+                document.getElementById('debtorName').value = '';
+                document.getElementById('debtorDoc').value = '';
+                document.getElementById('debtAmount').value = '';
+                document.getElementById('debtDueDate').value = '';
+                carregarDevedores();
+            } catch (e) {
+                alert(' Erro: ' + e.message);
+            }
         }
 
         async function carregarDevedores() {
-            const { data } = await db.from('debtors').select('*').order('name');
-            const tbody = document.getElementById('tabelaDevedores');
-            tbody.innerHTML = '';
-            let total = 0;
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Nenhum devedor</td></tr>';
-                document.getElementById('totalDevedores').textContent = '0';
-                document.getElementById('totalDividas').textContent = 'R$ 0';
-                return;
-            }
-            
-            document.getElementById('totalDevedores').textContent = data.length;
-            
-            for (const d of data) {
-                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', d.id).limit(1);
-                const dt = ds && ds[0] ? ds[0] : null;
+            try {
+                const { data } = await db.from('debtors').select('*').order('created_at', { ascending: false });
+                const tbody = document.getElementById('tabelaDevedores');
+                tbody.innerHTML = '';
+                let total = 0;
                 
-                if (dt) {
-                    total += parseFloat(dt.amount);
-                    const statusClass = dt.status === 'Pago' ? 'badge-pago' : 'badge-pendente';
-                    tbody.innerHTML += `<tr>
-                        <td><strong>${d.name}</strong></td>
-                        <td>R$ ${parseFloat(dt.amount).toFixed(2)}</td>
-                        <td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td>
-                        <td><span class="badge ${statusClass}">${dt.status}</span></td>
-                        <td>
-                            <button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button>
-                            <button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button>
-                        </td>
-                    </tr>`;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#718096;">Nenhum devedor</td></tr>';
+                    document.getElementById('totalDevedores').textContent = '0';
+                    document.getElementById('totalDividas').textContent = 'R$ 0';
+                    return;
                 }
+                
+                document.getElementById('totalDevedores').textContent = data.length;
+                
+                for (const d of data) {
+                    const { data: cd } = await db.from('clients').select('name').eq('id', d.client_id).single();
+                    const { data: ds } = await db.from('debts').select('*').eq('debtor_id', d.id).limit(1);
+                    const cn = cd ? cd.name : '-';
+                    const dt = ds && ds[0] ? ds[0] : null;
+                    
+                    if (dt) {
+                        total += parseFloat(dt.amount);
+                        const statusClass = dt.status === 'Pago' ? 'badge-pago' : 'badge-pendente';
+                        tbody.innerHTML += `<tr>
+                            <td><strong>${d.name}</strong></td>
+                            <td>${cn}</td>
+                            <td>R$ ${parseFloat(dt.amount).toFixed(2)}</td>
+                            <td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td>
+                            <td><span class="badge ${statusClass}">${dt.status}</span></td>
+                            <td>
+                                <button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')"> Cobrar</button>
+                                <button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button>
+                            </td>
+                        </tr>`;
+                    }
+                }
+                document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
+            } catch (e) {
+                console.error('Erro ao carregar devedores:', e);
             }
-            document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
         }
 
         async function excluirDevedor(id) {
-            if (!confirm('Excluir devedor?')) return;
-            await db.from('debts').delete().eq('debtor_id', id);
-            await db.from('debtors').delete().eq('id', id);
-            carregarDevedores();
+            if (!confirm('⚠️ Excluir devedor e sua dívida?')) return;
+            try {
+                await db.from('debts').delete().eq('debtor_id', id);
+                await db.from('debtors').delete().eq('id', id);
+                alert('✅ Excluído!');
+                carregarDevedores();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
-        // COBRANÇAS - COM EDIÇÃO E EXCLUSÃO
+        // ============ COBRANÇAS ============
         async function gerarCobranca(debtorId) {
-            const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
-            const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
-            const dt = ds[0];
-            const amount = parseFloat(dt.original_amount || dt.amount);
-            
-            const html = `
-                <h2>💳 Gerar Cobrança</h2>
-                <div class="invoice-box">
-                    <h3>📋 Dados</h3>
-                    <p><strong>Devedor:</strong> ${d.name}</p>
-                    <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
-                    <p><strong>Vencimento:</strong> ${new Date(dt.due_date).toLocaleDateString('pt-BR')}</p>
-                </div>
-                <h3>💰 Método de Pagamento</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
-                    <button class="btn btn-card" onclick="processarCartao('${debtorId}')" style="padding: 20px;">
-                        <div style="font-size: 2em;">💳</div>
-                        <div>Cartão de Crédito</div>
-                    </button>
-                    <button class="btn btn-pix" onclick="processarPix('${debtorId}')" style="padding: 20px;">
-                        <div style="font-size: 2em;">📱</div>
-                        <div>PIX</div>
-                    </button>
-                </div>
-            `;
-            document.getElementById('conteudoCobranca').innerHTML = html;
-            abrirModal();
+            try {
+                const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
+                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
+                const dt = ds[0];
+                const amount = parseFloat(dt.original_amount || dt.amount);
+                
+                const html = `
+                    <h2>💳 Gerar Cobrança</h2>
+                    <div class="invoice-box">
+                        <h3>📋 Dados</h3>
+                        <p><strong>Devedor:</strong> ${d.name}</p>
+                        <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
+                        <p><strong>Vencimento:</strong> ${new Date(dt.due_date).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <h3>💰 Método de Pagamento</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+                        <button class="btn btn-card" onclick="processarCartao('${debtorId}')" style="padding: 20px;">
+                            <div style="font-size: 2em;">💳</div>
+                            <div>Cartão de Crédito</div>
+                        </button>
+                        <button class="btn btn-pix" onclick="processarPix('${debtorId}')" style="padding: 20px;">
+                            <div style="font-size: 2em;"></div>
+                            <div>PIX</div>
+                        </button>
+                    </div>
+                `;
+                document.getElementById('conteudoCobranca').innerHTML = html;
+                abrirModal();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
         async function processarCartao(debtorId) {
-            const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
-            const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
-            const dt = ds[0];
-            const amount = parseFloat(dt.original_amount || dt.amount);
-            
-            const installments = prompt('Número de parcelas (1-12):', '1') || '1';
-            const code = 'M1D5-' + Date.now().toString().slice(-8);
-            
-            await db.from('invoices').insert([{
-                debt_id: dt.id, 
-                invoice_code: code, 
-                payment_method: 'cartao',
-                amount: amount, 
-                currency: 'BRL', 
-                status: 'pending',
-                due_date: dt.due_date, 
-                installments: parseInt(installments),
-                bank_account: 'Banco Inter - M1D5'
-            }]);
-            
-            alert('✅ Cobrança de cartão gerada! Código: ' + code);
-            fecharModal();
-            carregarCobrancas();
+            try {
+                const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
+                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
+                const dt = ds[0];
+                const amount = parseFloat(dt.original_amount || dt.amount);
+                
+                const installments = prompt('Número de parcelas (1-12):', '1') || '1';
+                const code = 'M1D5-' + Date.now().toString().slice(-8);
+                
+                const { error } = await db.from('invoices').insert([{
+                    debt_id: dt.id, 
+                    invoice_code: code, 
+                    payment_method: 'cartao',
+                    amount: amount, 
+                    currency: 'BRL', 
+                    status: 'pending',
+                    due_date: dt.due_date, 
+                    installments: parseInt(installments),
+                    bank_account: 'Banco Inter - M1D5'
+                }]);
+                
+                if (error) throw error;
+                
+                alert('✅ Cobrança de cartão gerada!\nCódigo: ' + code);
+                fecharModal();
+                carregarCobrancas();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
         async function processarPix(debtorId) {
-            const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
-            const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
-            const dt = ds[0];
-            const amount = parseFloat(dt.original_amount || dt.amount);
-            
-            const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
-            
-            await db.from('invoices').insert([{
-                debt_id: dt.id, 
-                invoice_code: code, 
-                payment_method: 'pix',
-                amount: amount, 
-                currency: 'BRL', 
-                status: 'pending',
-                due_date: dt.due_date,
-                bank_account: 'Banco Inter - M1D5'
-            }]);
-            
-            alert('✅ Cobrança PIX gerada! Código: ' + code);
-            fecharModal();
-            carregarCobrancas();
+            try {
+                const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
+                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
+                const dt = ds[0];
+                const amount = parseFloat(dt.original_amount || dt.amount);
+                
+                const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
+                
+                const { error } = await db.from('invoices').insert([{
+                    debt_id: dt.id, 
+                    invoice_code: code, 
+                    payment_method: 'pix',
+                    amount: amount, 
+                    currency: 'BRL', 
+                    status: 'pending',
+                    due_date: dt.due_date,
+                    bank_account: 'Banco Inter - M1D5'
+                }]);
+                
+                if (error) throw error;
+                
+                alert('✅ Cobrança PIX gerada!\nCódigo: ' + code);
+                fecharModal();
+                carregarCobrancas();
+            } catch (e) {
+                alert(' Erro: ' + e.message);
+            }
         }
 
         async function carregarCobrancas() {
-            const { data } = await db.from('invoices').select('*').order('created_at', { ascending: false });
-            const tbody = document.getElementById('tabelaCobrancas');
-            tbody.innerHTML = '';
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nenhuma cobrança</td></tr>';
-                document.getElementById('totalCobrancas').textContent = '0';
-                return;
-            }
-            
-            document.getElementById('totalCobrancas').textContent = data.length;
-            
-            for (const inv of data) {
-                const { data: dd } = await db.from('debts').select('debtor_id').eq('id', inv.debt_id).single();
-                let dn = '-';
-                if (dd && dd.debtor_id) {
-                    const { data: db } = await db.from('debtors').select('name').eq('id', dd.debtor_id).single();
-                    dn = db ? db.name : '-';
+            try {
+                const { data } = await db.from('invoices').select('*').order('created_at', { ascending: false });
+                const tbody = document.getElementById('tabelaCobrancas');
+                tbody.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#718096;">Nenhuma cobrança</td></tr>';
+                    document.getElementById('totalCobrancas').textContent = '0';
+                    return;
                 }
                 
-                const methodText = inv.payment_method === 'pix' ? 'PIX' : `Cartão ${inv.installments}x`;
-                const statusClass = inv.status === 'paid' ? 'badge-pago' : 'badge-pendente';
+                document.getElementById('totalCobrancas').textContent = data.length;
                 
-                tbody.innerHTML += `<tr>
-                    <td><strong>${inv.invoice_code}</strong></td>
-                    <td>${dn}</td>
-                    <td>R$ ${parseFloat(inv.amount).toFixed(2)}</td>
-                    <td>${methodText}</td>
-                    <td><span class="badge ${statusClass}">${inv.status}</span></td>
-                    <td>
-                        <button class="btn btn-small btn-edit" onclick="editarCobranca('${inv.id}', '${inv.due_date}')">✏️</button>
-                        <button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">🗑️</button>
-                    </td>
-                </tr>`;
+                for (const inv of data) {
+                    let dn = '-';
+                    if (inv.debt_id) {
+                        const { data: dd } = await db.from('debts').select('debtor_id').eq('id', inv.debt_id).single();
+                        if (dd && dd.debtor_id) {
+                            const { data: db2 } = await db.from('debtors').select('name').eq('id', dd.debtor_id).single();
+                            dn = db2 ? db2.name : '-';
+                        }
+                    }
+                    
+                    const methodText = inv.payment_method === 'pix' ? 'PIX' : `Cartão ${inv.installments || 1}x`;
+                    const statusClass = inv.status === 'paid' ? 'badge-pago' : 'badge-pendente';
+                    
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${inv.invoice_code}</strong></td>
+                        <td>${dn}</td>
+                        <td>R$ ${parseFloat(inv.amount).toFixed(2)}</td>
+                        <td>${methodText}</td>
+                        <td><span class="badge ${statusClass}">${inv.status}</span></td>
+                        <td>
+                            <button class="btn btn-small btn-edit" onclick="editarCobranca('${inv.id}', '${inv.due_date || ''}')">✏️</button>
+                            <button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">🗑️</button>
+                        </td>
+                    </tr>`;
+                }
+            } catch (e) {
+                console.error('Erro ao carregar cobranças:', e);
             }
         }
 
@@ -552,21 +637,29 @@
             const novaData = prompt('Nova data de vencimento (AAAA-MM-DD):', dueDate);
             if (!novaData) return;
             
-            const { error } = await db.from('invoices').update({ due_date: novaData }).eq('id', id);
-            if (error) { alert('Erro: ' + error.message); return; }
-            alert('✅ Cobrança atualizada!');
-            carregarCobrancas();
+            try {
+                const { error } = await db.from('invoices').update({ due_date: novaData }).eq('id', id);
+                if (error) throw error;
+                alert('✅ Cobrança atualizada!');
+                carregarCobrancas();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
         async function excluirCobranca(id) {
-            if (!confirm('Excluir cobrança?')) return;
-            const { error } = await db.from('invoices').delete().eq('id', id);
-            if (error) { alert('Erro: ' + error.message); return; }
-            alert('✅ Cobrança excluída!');
-            carregarCobrancas();
+            if (!confirm('⚠️ Excluir esta cobrança?')) return;
+            try {
+                const { error } = await db.from('invoices').delete().eq('id', id);
+                if (error) throw error;
+                alert('✅ Cobrança excluída!');
+                carregarCobrancas();
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
-        // CONFIG
+        // ============ CONFIG ============
         function carregarConfig() {
             document.getElementById('interClientId').value = localStorage.getItem('m1d5_interClientId') || '';
             document.getElementById('interClientSecret').value = localStorage.getItem('m1d5_interClientSecret') || '';
@@ -580,7 +673,10 @@
             const account = document.getElementById('interAccount').value.trim();
             const pixKey = document.getElementById('pixKey').value.trim();
             
-            if (!clientId || !clientSecret || !account) { alert('Preencha todos os campos!'); return; }
+            if (!clientId || !clientSecret || !account) { 
+                alert('️ Preencha Client ID, Client Secret e Conta!'); 
+                return; 
+            }
             
             localStorage.setItem('m1d5_interClientId', clientId);
             localStorage.setItem('m1d5_interClientSecret', clientSecret);
@@ -588,7 +684,7 @@
             localStorage.setItem('m1d5_pixKey', pixKey);
             
             const msg = document.getElementById('configMsg');
-            msg.textContent = '✅ Configurações salvas!';
+            msg.textContent = '✅ Configurações salvas com sucesso!';
             msg.style.display = 'block';
             setTimeout(() => msg.style.display = 'none', 3000);
         }
