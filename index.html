@@ -151,7 +151,7 @@
                         <div class="subtitle">Sistema de Pagamentos - Banco Inter</div>
                     </div>
                     <div class="user-info">
-                        <span> Usuário: <strong id="currentUser">-</strong></span>
+                        <span>👤 Usuário: <strong id="currentUser">-</strong></span>
                         <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
             <div class="tabs">
                 <button class="tab active" onclick="showTab('clientes', this)">👥 Clientes</button>
                 <button class="tab" onclick="showTab('devedores', this)">💰 Devedores</button>
-                <button class="tab" onclick="showTab('cobrancas', this)"> Cobranças</button>
+                <button class="tab" onclick="showTab('cobrancas', this)">💳 Cobranças</button>
                 <button class="tab" onclick="showTab('config', this)">⚙️ Config</button>
             </div>
 
@@ -205,7 +205,7 @@
                     <button class="btn" onclick="cadastrarDevedor()">✅ Salvar</button>
                 </div>
                 <div class="card">
-                    <h2> Devedores</h2>
+                    <h2>📊 Devedores</h2>
                     <div class="table-container"><table><thead><tr><th>Devedor</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
                 </div>
             </div>
@@ -221,7 +221,7 @@
                 <div class="card">
                     <h2>⚙️ Configurações</h2>
                     <div class="bank-info">
-                        <h3> Banco Inter</h3>
+                        <h3>🏦 Banco Inter</h3>
                         <p>Configure as credenciais da API</p>
                     </div>
                     <div class="config-box">
@@ -232,7 +232,7 @@
                         <button class="btn" onclick="salvarConfigInter()">💾 Salvar</button>
                     </div>
                     <div class="config-box">
-                        <h4>📱 Chave PIX</h4>
+                        <h4> Chave PIX</h4>
                         <div class="form-group"><label>Chave PIX</label><input type="text" id="pixKey" placeholder="CNPJ, email ou telefone"></div>
                         <button class="btn btn-pix" onclick="salvarConfigPix()">💾 Salvar</button>
                     </div>
@@ -250,25 +250,25 @@
     </div>
 
     <script>
-        console.log('🚀 Sistema M1D5 carregado!');
+        console.log(' Sistema M1D5 carregado!');
         
         const SUPABASE_URL = 'https://vvbrgvmuydiubmgqplif.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_WLIlDcFgZT_5X_Uf4cNOtQ_EyHUvES0';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const WORKER_URL = 'https://m1d5-inter-api.chalubdp.workers.dev';
 
         // SISTEMA DE LOGIN - CREDENCIAIS
         const LOGIN_CORRETO = 'M1D5admin';
         const SENHA_CORRETA = 'RoMa*2026';
 
-        console.log(' Login configurado:', LOGIN_CORRETO);
+        console.log('🔐 Login configurado:', LOGIN_CORRETO);
 
         // Verificar se já está logado ao carregar
         window.addEventListener('load', function() {
             console.log('✅ Página carregada');
             const usuarioSalvo = localStorage.getItem('usuarioLogado');
             if (usuarioSalvo) {
-                console.log(' Usuário salvo:', usuarioSalvo);
+                console.log('👤 Usuário salvo:', usuarioSalvo);
                 mostrarSistema(usuarioSalvo);
             }
         });
@@ -294,7 +294,7 @@
                 localStorage.setItem('usuarioLogado', user);
                 mostrarSistema(user);
             } else {
-                console.log(' Login falhou!');
+                console.log('❌ Login falhou!');
                 const errorDiv = document.getElementById('loginError');
                 errorDiv.textContent = '❌ Usuário ou senha incorretos!';
                 errorDiv.style.display = 'block';
@@ -337,7 +337,7 @@
             
             if (!name) { alert('Preencha o nome!'); return; }
             
-            const { error } = await supabase.from('clients').insert([{ name, document: doc || null, email: email || null, phone: phone || null }]);
+            const { error } = await db.from('clients').insert([{ name, document: doc || null, email: email || null, phone: phone || null }]);
             if (error) { alert('Erro: ' + error.message); return; }
             
             alert('✅ Cliente cadastrado!');
@@ -349,7 +349,7 @@
         }
 
         async function carregarClientes() {
-            const { data } = await supabase.from('clients').select('*').order('name');
+            const { data } = await db.from('clients').select('*').order('name');
             const tbody = document.getElementById('tabelaClientes');
             const select = document.getElementById('debtorClientSelect');
             tbody.innerHTML = '';
@@ -363,14 +363,14 @@
             
             document.getElementById('totalClientes').textContent = data.length;
             data.forEach(c => {
-                tbody.innerHTML += `<tr><td><strong>${c.name}</strong></td><td>${c.document || '-'}</td><td>${c.email || '-'}</td><td><button class="btn btn-small btn-delete" onclick="excluirCliente('${c.id}')">️</button></td></tr>`;
+                tbody.innerHTML += `<tr><td><strong>${c.name}</strong></td><td>${c.document || '-'}</td><td>${c.email || '-'}</td><td><button class="btn btn-small btn-delete" onclick="excluirCliente('${c.id}')">🗑️</button></td></tr>`;
                 select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
         }
 
         async function excluirCliente(id) {
             if (!confirm('Excluir?')) return;
-            await supabase.from('clients').delete().eq('id', id);
+            await db.from('clients').delete().eq('id', id);
             carregarClientes();
         }
 
@@ -385,10 +385,10 @@
             
             if (!client_id || !name || !amount || !due) { alert('Preencha todos os campos!'); return; }
             
-            const { data: debtorData, error: e1 } = await supabase.from('debtors').insert([{ client_id, name, document: doc || null }]).select();
+            const { data: debtorData, error: e1 } = await db.from('debtors').insert([{ client_id, name, document: doc || null }]).select();
             if (e1) { alert('Erro: ' + e1.message); return; }
             
-            const { error: e2 } = await supabase.from('debts').insert([{ debtor_id: debtorData[0].id, original_amount: amount, amount: amount, currency: 'BRL', due_date: due, status: 'Pendente' }]);
+            const { error: e2 } = await db.from('debts').insert([{ debtor_id: debtorData[0].id, original_amount: amount, amount: amount, currency: 'BRL', due_date: due, status: 'Pendente' }]);
             if (e2) { alert('Erro: ' + e2.message); return; }
             
             alert('✅ Devedor cadastrado!');
@@ -400,7 +400,7 @@
         }
 
         async function carregarDevedores() {
-            const { data } = await supabase.from('debtors').select('*').order('name');
+            const { data } = await db.from('debtors').select('*').order('name');
             const tbody = document.getElementById('tabelaDevedores');
             tbody.innerHTML = '';
             let total = 0;
@@ -415,13 +415,13 @@
             document.getElementById('totalDevedores').textContent = data.length;
             
             for (const d of data) {
-                const { data: ds } = await supabase.from('debts').select('*').eq('debtor_id', d.id).limit(1);
+                const { data: ds } = await db.from('debts').select('*').eq('debtor_id', d.id).limit(1);
                 const dt = ds && ds[0] ? ds[0] : null;
                 
                 if (dt) {
                     total += parseFloat(dt.amount);
                     const statusClass = dt.status === 'Pago' ? 'badge-pago' : dt.status === 'Vencido' ? 'badge-vencido' : 'badge-pendente';
-                    tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')"> Cobrar</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button></td></tr>`;
+                    tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button></td></tr>`;
                 }
             }
             document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
@@ -429,20 +429,20 @@
 
         async function excluirDevedor(id) {
             if (!confirm('Excluir?')) return;
-            await supabase.from('debts').delete().eq('debtor_id', id);
-            await supabase.from('debtors').delete().eq('id', id);
+            await db.from('debts').delete().eq('debtor_id', id);
+            await db.from('debtors').delete().eq('id', id);
             carregarDevedores();
         }
 
         // COBRANÇAS
         async function gerarCobranca(debtorId) {
-            const { data: d } = await supabase.from('debtors').select('*').eq('id', debtorId).single();
-            const { data: ds } = await supabase.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
+            const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
+            const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
             const dt = ds[0];
             const amount = parseFloat(dt.original_amount || dt.amount);
             
             const html = `
-                <h2>💳 Gerar Cobrança</h2>
+                <h2> Gerar Cobrança</h2>
                 <div class="invoice-box">
                     <h3>📋 Dados</h3>
                     <p><strong>Devedor:</strong> ${d.name}</p>
@@ -457,7 +457,7 @@
                         <div class="desc">Até 12x</div>
                     </div>
                     <div class="payment-option" onclick="processarPix('${debtorId}', this)">
-                        <div class="icon">📱</div>
+                        <div class="icon"></div>
                         <div class="title">PIX</div>
                         <div class="desc">Instantâneo</div>
                     </div>
@@ -471,15 +471,15 @@
             document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
             el.classList.add('selected');
             
-            const { data: d } = await supabase.from('debtors').select('*').eq('id', debtorId).single();
-            const { data: ds } = await supabase.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
+            const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
+            const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
             const dt = ds[0];
             const amount = parseFloat(dt.original_amount || dt.amount);
             
             const installments = prompt('Número de parcelas (1-12):', '1') || '1';
             const code = 'M1D5-' + Date.now().toString().slice(-8);
             
-            await supabase.from('invoices').insert([{
+            await db.from('invoices').insert([{
                 debt_id: dt.id, invoice_code: code, payment_method: 'cartao',
                 amount: amount, currency: 'BRL', status: 'pending',
                 due_date: dt.due_date, installments: parseInt(installments),
@@ -503,7 +503,7 @@
                 const data = await resp.json();
                 if (!resp.ok) throw new Error(data.error || 'Erro criar cobrança');
                 
-                await supabase.from('invoices').update({
+                await db.from('invoices').update({
                     invoice_url: data.linkPagamento, inter_cobranca_id: data.codigoCobranca
                 }).eq('invoice_code', code);
                 
@@ -521,7 +521,7 @@
                         <div class="invoice-code">${data.linkPagamento}</div>
                         <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar</button>
                         <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')">🌐 Abrir</button>
-                        <button class="btn" onclick="enviarWhatsApp('${d.name}', '${data.linkPagamento}', 'R$ ${amount.toFixed(2)}')"> WhatsApp</button>
+                        <button class="btn" onclick="enviarWhatsApp('${d.name}', '${data.linkPagamento}', 'R$ ${amount.toFixed(2)}')">📱 WhatsApp</button>
                     </div>
                     <div class="success-msg">✅ Cobrança registrada no Banco Inter!</div>
                     <button class="btn" onclick="fecharModal()">Fechar</button>
@@ -539,14 +539,14 @@
             document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
             el.classList.add('selected');
             
-            const { data: d } = await supabase.from('debtors').select('*').eq('id', debtorId).single();
-            const { data: ds } = await supabase.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
+            const { data: d } = await db.from('debtors').select('*').eq('id', debtorId).single();
+            const { data: ds } = await db.from('debts').select('*').eq('debtor_id', debtorId).limit(1);
             const dt = ds[0];
             const amount = parseFloat(dt.original_amount || dt.amount);
             
             const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
             
-            await supabase.from('invoices').insert([{
+            await db.from('invoices').insert([{
                 debt_id: dt.id, invoice_code: code, payment_method: 'pix',
                 amount: amount, currency: 'BRL', status: 'pending',
                 due_date: dt.due_date, bank_account: 'Banco Inter - M1D5'
@@ -568,7 +568,7 @@
                 const data = await resp.json();
                 if (!resp.ok) throw new Error(data.error || 'Erro criar PIX');
                 
-                await supabase.from('invoices').update({
+                await db.from('invoices').update({
                     invoice_url: data.linkPagamento, inter_cobranca_id: data.codigoCobranca
                 }).eq('invoice_code', code);
                 
@@ -580,11 +580,11 @@
                         <p><strong>Devedor:</strong> ${d.name}</p>
                         <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
                     </div>
-                    ${data.pixCode ? `<div class="pix-qr"><h3>📱 QR Code</h3><img src="data:image/png;base64,${data.pixCode}" alt="QR Code"></div>` : ''}
+                    ${data.pixCode ? `<div class="pix-qr"><h3> QR Code</h3><img src="data:image/png;base64,${data.pixCode}" alt="QR Code"></div>` : ''}
                     <div class="invoice-box" style="background:#d1fae5; border-color:#10b981;">
-                        <h3>💠 Código PIX</h3>
+                        <h3> Código PIX</h3>
                         <div class="invoice-code">${data.pixPayload}</div>
-                        <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')"> Copiar</button>
+                        <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')">📋 Copiar</button>
                     </div>
                     <div class="success-msg">✅ PIX registrado!</div>
                     <button class="btn" onclick="fecharModal()">Fechar</button>
@@ -599,7 +599,7 @@
         }
 
         async function carregarCobrancas() {
-            const { data } = await supabase.from('invoices').select('*').order('created_at', { ascending: false });
+            const { data } = await db.from('invoices').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('tabelaCobrancas');
             tbody.innerHTML = '';
             
@@ -612,23 +612,23 @@
             document.getElementById('totalCobrancas').textContent = data.length;
             
             for (const inv of data) {
-                const { data: dd } = await supabase.from('debts').select('debtor_id').eq('id', inv.debt_id).single();
+                const { data: dd } = await db.from('debts').select('debtor_id').eq('id', inv.debt_id).single();
                 let dn = '-';
                 if (dd && dd.debtor_id) {
-                    const { data: db } = await supabase.from('debtors').select('name').eq('id', dd.debtor_id).single();
+                    const { data: db } = await db.from('debtors').select('name').eq('id', dd.debtor_id).single();
                     dn = db ? db.name : '-';
                 }
                 
                 const methodText = inv.payment_method === 'pix' ? 'PIX' : `Cartão ${inv.installments}x`;
                 const statusClass = inv.status === 'paid' ? 'badge-pago' : 'badge-pendente';
                 
-                tbody.innerHTML += `<tr><td><strong>${inv.invoice_code}</strong></td><td>${dn}</td><td>R$ ${parseFloat(inv.amount).toFixed(2)}</td><td>${methodText}</td><td><span class="badge ${statusClass}">${inv.status}</span></td><td>${inv.invoice_url ? `<button class="btn btn-small" onclick="window.open('${inv.invoice_url}', '_blank')">Link</button>` : ''}<button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">️</button></td></tr>`;
+                tbody.innerHTML += `<tr><td><strong>${inv.invoice_code}</strong></td><td>${dn}</td><td>R$ ${parseFloat(inv.amount).toFixed(2)}</td><td>${methodText}</td><td><span class="badge ${statusClass}">${inv.status}</span></td><td>${inv.invoice_url ? `<button class="btn btn-small" onclick="window.open('${inv.invoice_url}', '_blank')">Link</button>` : ''}<button class="btn btn-small btn-delete" onclick="excluirCobranca('${inv.id}')">🗑️</button></td></tr>`;
             }
         }
 
         async function excluirCobranca(id) {
             if (!confirm('Excluir?')) return;
-            await supabase.from('invoices').delete().eq('id', id);
+            await db.from('invoices').delete().eq('id', id);
             carregarCobrancas();
         }
 
