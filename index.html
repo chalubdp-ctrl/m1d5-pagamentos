@@ -2,12 +2,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>M1D5 - Sistema de Pagamentos</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF7A00">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="M1D5 Pagamentos">
+    <meta name="mobile-web-app-capable" content="yes">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #fff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; color: #fff; -webkit-tap-highlight-color: transparent; }
         .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
         .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-width: 420px; width: 100%; }
         .login-header { text-align: center; margin-bottom: 30px; }
@@ -73,6 +78,7 @@
         .copy-btn { background: #4299e1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
         .success-msg { background: #d1fae5; color: #065f46; padding: 15px; border-radius: 10px; margin: 15px 0; }
         .error-msg { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        .alert-warning { background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 15px; border-radius: 10px; margin: 15px 0; }
         .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; }
         .spinner { width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top: 5px solid #FF7A00; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -83,8 +89,6 @@
         .payment-method-btn .title { font-weight: 700; color: #2d3748; }
         .payment-method-btn .desc { font-size: 0.85em; color: #718096; margin-top: 5px; }
         .alert-info { background: #dbeafe; border: 2px solid #3b82f6; color: #1e40af; padding: 15px; border-radius: 10px; margin: 15px 0; }
-        
-        /* ✅ CORREÇÃO: Select de parcelas com fundo branco e letra preta */
         .select-parcelas {
             width: 100% !important;
             padding: 14px !important;
@@ -107,6 +111,13 @@
             border-color: #FF7A00 !important;
             box-shadow: 0 0 0 3px rgba(255,122,0,0.2) !important;
         }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header { padding: 20px; }
+            .brand { font-size: 2em; }
+            .card { padding: 20px; }
+            .modal-content { margin: 10px auto; padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -124,7 +135,7 @@
                     <input type="text" id="loginUser" placeholder="Digite seu usuário" required>
                 </div>
                 <div class="form-group">
-                    <label> Senha</label>
+                    <label>🔒 Senha</label>
                     <input type="password" id="loginPass" placeholder="Digite sua senha" required>
                 </div>
                 <button type="submit" class="btn-login">🔐 Entrar no Sistema</button>
@@ -141,7 +152,7 @@
                         <div class="subtitle">Sistema de Pagamentos - Banco Inter</div>
                     </div>
                     <div class="user-info">
-                        <span> Usuário: <strong id="currentUser">-</strong></span>
+                        <span>👤 Usuário: <strong id="currentUser">-</strong></span>
                         <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
                     </div>
                 </div>
@@ -155,9 +166,9 @@
             </div>
 
             <div class="tabs">
-                <button class="tab active" onclick="showTab('clientes', this)">👥 Clientes</button>
+                <button class="tab active" onclick="showTab('clientes', this)"> Clientes</button>
                 <button class="tab" onclick="showTab('devedores', this)">💰 Devedores</button>
-                <button class="tab" onclick="showTab('cobrancas', this)"> Cobranças</button>
+                <button class="tab" onclick="showTab('cobrancas', this)">💳 Cobranças</button>
                 <button class="tab" onclick="showTab('config', this)">⚙️ Config</button>
             </div>
 
@@ -182,7 +193,7 @@
 
             <div id="tab-devedores" class="tab-content">
                 <div class="card">
-                    <h2> Cadastrar Devedor</h2>
+                    <h2>💰 Cadastrar Devedor</h2>
                     <div class="form-group"><label>Cliente *</label><select id="debtorClientSelect"><option value="">Carregando...</option></select></div>
                     <div class="form-row">
                         <div class="form-group"><label>Nome do Devedor *</label><input type="text" id="debtorName" placeholder="Nome"></div>
@@ -195,7 +206,7 @@
                     <button class="btn" onclick="cadastrarDevedor()">✅ Salvar</button>
                 </div>
                 <div class="card">
-                    <h2> Devedores</h2>
+                    <h2>📊 Devedores</h2>
                     <div class="table-container"><table><thead><tr><th>Devedor</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
                 </div>
             </div>
@@ -210,6 +221,9 @@
             <div id="tab-config" class="tab-content">
                 <div class="card">
                     <h2>⚙️ Configurações Banco Inter</h2>
+                    <div class="alert-warning" style="margin-bottom: 20px;">
+                        <strong>📱 Importante para App:</strong> As configurações são salvas no navegador. Se instalar como app, será necessário configurar novamente.
+                    </div>
                     <div class="alert-info">
                         <strong>💡 Dica:</strong> Para processar pagamentos reais, configure as credenciais do Banco Inter abaixo.
                     </div>
@@ -346,8 +360,8 @@
             const amountStr = document.getElementById('debtAmount').value.trim();
             const due = document.getElementById('debtDueDate').value;
             const amount = parseFloat(amountStr.replace(',', '.'));
-            if (!client_id) { alert('⚠️ Selecione um cliente!'); return; }
-            if (!name) { alert('️ Preencha o nome!'); return; }
+            if (!client_id) { alert('️ Selecione um cliente!'); return; }
+            if (!name) { alert('⚠️ Preencha o nome!'); return; }
             if (!amount || amount <= 0) { alert('⚠️ Valor inválido!'); return; }
             if (!due) { alert('⚠️ Preencha a data!'); return; }
             try {
@@ -385,7 +399,7 @@
                     if (dt) {
                         total += parseFloat(dt.amount);
                         const statusClass = dt.status === 'Pago' ? 'badge-pago' : 'badge-pendente';
-                        tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${cn}</td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')">💳 Cobrar</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button></td></tr>`;
+                        tbody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${cn}</td><td>R$ ${parseFloat(dt.amount).toFixed(2)}</td><td>${new Date(dt.due_date).toLocaleDateString('pt-BR')}</td><td><span class="badge ${statusClass}">${dt.status}</span></td><td><button class="btn btn-small btn-card" onclick="gerarCobranca('${d.id}')"> Cobrar</button><button class="btn btn-small btn-delete" onclick="excluirDevedor('${d.id}')">🗑️</button></td></tr>`;
                     }
                 }
                 document.getElementById('totalDividas').textContent = 'R$ ' + total.toFixed(2);
@@ -411,7 +425,7 @@
                 currentDebtorId = debtorId;
                 currentDebtData = { debtor: d, debt: dt, amount: amount };
                 const html = `
-                    <h2 style="margin-bottom: 20px;">💳 Gerar Cobrança</h2>
+                    <h2 style="margin-bottom: 20px;"> Gerar Cobrança</h2>
                     <div class="invoice-box">
                         <h3>📋 Dados da Cobrança</h3>
                         <p><strong>Devedor:</strong> ${d.name}</p>
@@ -423,7 +437,7 @@
                         <div class="payment-method-btn" onclick="mostrarFormularioCartao()">
                             <div class="icon">💳</div>
                             <div class="title">Cartão de Crédito</div>
-                            <div class="desc">Até 5x sem juros</div>
+                            <div class="desc">Até 12x sem juros</div>
                         </div>
                         <div class="payment-method-btn" onclick="mostrarFormularioPix()">
                             <div class="icon">📱</div>
@@ -440,9 +454,9 @@
         function mostrarFormularioCartao() {
             const { debtor, debt, amount } = currentDebtData;
             
-            // Gerar opções de parcelas de 1x a 5x
+            // ✅ GERAR OPÇÕES DE PARCELAS DE 1x A 12x
             let parcelasHtml = '';
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 12; i++) {
                 const valorParcela = amount / i;
                 parcelasHtml += `<option value="${i}">${i}x de R$ ${valorParcela.toFixed(2)} (sem juros)</option>`;
             }
@@ -451,7 +465,7 @@
                 <h2 style="margin-bottom: 20px; color: #1a1a2e;">💳 Pagamento com Cartão</h2>
                 
                 <div class="invoice-box" style="margin-bottom: 20px;">
-                    <h3>📋 Dados da Cobrança</h3>
+                    <h3> Dados da Cobrança</h3>
                     <p><strong>Devedor:</strong> ${debtor.name}</p>
                     <p><strong>Valor Total:</strong> R$ ${amount.toFixed(2)}</p>
                 </div>
@@ -460,7 +474,7 @@
                     <h3 style="color: #FFB347; margin-bottom: 20px;">💳 Dados do Cartão</h3>
                     
                     <div style="margin-bottom: 15px;">
-                        <label style="color: #FFB347; margin-bottom: 8px; display: block; font-weight: 600;"> Número de Parcelas (até 5x)</label>
+                        <label style="color: #FFB347; margin-bottom: 8px; display: block; font-weight: 600;">📊 Número de Parcelas (até 12x)</label>
                         <select id="cardInstallments" class="select-parcelas">
                             ${parcelasHtml}
                         </select>
@@ -602,7 +616,7 @@
             if (!cardNumber || cardNumber.length < 13) { alert('⚠️ Número do cartão inválido!'); return; }
             if (!cardName) { alert('⚠️ Preencha o nome!'); return; }
             if (!cardExpiry) { alert('⚠️ Validade inválida!'); return; }
-            if (!cardCvv) { alert('⚠️ CVV inválido!'); return; }
+            if (!cardCvv) { alert('️ CVV inválido!'); return; }
             if (!cardCpf || cardCpf.length < 11) { alert('⚠️ CPF inválido!'); return; }
             if (!cardEmail) { alert('⚠️ E-mail inválido!'); return; }
             
@@ -650,14 +664,14 @@
                         <h2>✅ Pagamento Processado!</h2>
                         <div class="success-msg">✅ Cobrança registrada!<br>Código: <strong>${code}</strong></div>
                         <div class="invoice-box">
-                            <h3>📋 Detalhes</h3>
+                            <h3> Detalhes</h3>
                             <p><strong>Devedor:</strong> ${debtor.name}</p>
                             <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
                             <p><strong>Parcelas:</strong> ${installments}x</p>
                         </div>
                         ${data.linkPagamento ? `
                         <div class="invoice-box" style="background:#dbeafe; border-color:#3b82f6;">
-                            <h3>🔗 Link</h3>
+                            <h3> Link</h3>
                             <div class="invoice-code">${data.linkPagamento}</div>
                             <button class="copy-btn" onclick="copiarLink('${data.linkPagamento}')">📋 Copiar</button>
                             <button class="btn btn-card" onclick="window.open('${data.linkPagamento}', '_blank')">🌐 Abrir</button>
@@ -677,7 +691,7 @@
                             Para processar pagamentos reais, configure o Cloudflare Worker.
                         </div>
                         <div class="invoice-box">
-                            <h3>📋 Detalhes</h3>
+                            <h3> Detalhes</h3>
                             <p><strong>Devedor:</strong> ${debtor.name}</p>
                             <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
                             <p><strong>Parcelas:</strong> ${installments}x</p>
@@ -689,7 +703,7 @@
                     carregarCobrancas();
                 }
             } catch (e) {
-                alert(' Erro: ' + e.message);
+                alert('❌ Erro: ' + e.message);
             } finally {
                 removerLoading();
             }
@@ -714,7 +728,7 @@
                     Vá em Configurações e cadastre sua chave PIX.
                 </div>`}
                 <div class="form-group">
-                    <label>👤 Nome do Pagador</label>
+                    <label> Nome do Pagador</label>
                     <input type="text" id="pixPayerName" value="${debtor.name}">
                 </div>
                 <div class="form-group">
@@ -776,7 +790,7 @@
                         <div class="success-msg">✅ Código PIX criado!<br>Código: <strong>${code}</strong></div>
                         ${data.pixCode ? `
                         <div style="text-align: center; padding: 20px;">
-                            <h3> QR Code</h3>
+                            <h3>📱 QR Code</h3>
                             <img src="data:image/png;base64,${data.pixCode}" alt="QR Code" style="max-width: 280px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; background: white; margin: 20px auto;">
                         </div>` : ''}
                         ${data.pixPayload ? `
@@ -799,7 +813,7 @@
                             <h3>📱 Chave PIX para Pagamento</h3>
                             <p style="margin-bottom: 10px;">Envie esta chave PIX ao cliente:</p>
                             <div class="invoice-code" style="font-size: 1.2em; font-weight: bold;">${pixKey}</div>
-                            <button class="copy-btn" onclick="copiarLink('${pixKey}')">📋 Copiar Chave PIX</button>
+                            <button class="copy-btn" onclick="copiarLink('${pixKey}')"> Copiar Chave PIX</button>
                             <button class="btn btn-pix" onclick="enviarWhatsAppPix('${debtor.name}', '${pixKey}', 'R$ ${amount.toFixed(2)}', '${code}')" style="margin-top: 10px;">📱 Enviar por WhatsApp</button>
                         </div>
                         <div class="error-msg" style="margin-top:15px;">
@@ -894,7 +908,7 @@
             const clientSecret = document.getElementById('interClientSecret').value.trim();
             const account = document.getElementById('interAccount').value.trim();
             const pixKey = document.getElementById('pixKey').value.trim();
-            if (!clientId || !clientSecret || !account) { alert('️ Preencha todos os campos!'); return; }
+            if (!clientId || !clientSecret || !account) { alert('⚠️ Preencha todos os campos!'); return; }
             localStorage.setItem('m1d5_interClientId', clientId);
             localStorage.setItem('m1d5_interClientSecret', clientSecret);
             localStorage.setItem('m1d5_interAccount', account);
