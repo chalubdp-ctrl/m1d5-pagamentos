@@ -83,6 +83,30 @@
         .payment-method-btn .title { font-weight: 700; color: #2d3748; }
         .payment-method-btn .desc { font-size: 0.85em; color: #718096; margin-top: 5px; }
         .alert-info { background: #dbeafe; border: 2px solid #3b82f6; color: #1e40af; padding: 15px; border-radius: 10px; margin: 15px 0; }
+        
+        /* ✅ CORREÇÃO: Select de parcelas com fundo branco e letra preta */
+        .select-parcelas {
+            width: 100% !important;
+            padding: 14px !important;
+            border-radius: 10px !important;
+            border: 2px solid #e2e8f0 !important;
+            background: white !important;
+            color: #1a1a2e !important;
+            font-size: 1.05em !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            appearance: auto !important;
+        }
+        .select-parcelas option {
+            background: white !important;
+            color: #1a1a2e !important;
+            padding: 10px !important;
+        }
+        .select-parcelas:focus {
+            outline: none !important;
+            border-color: #FF7A00 !important;
+            box-shadow: 0 0 0 3px rgba(255,122,0,0.2) !important;
+        }
     </style>
 </head>
 <body>
@@ -96,11 +120,11 @@
             <div class="login-error" id="loginError"></div>
             <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label>👤 Usuário</label>
+                    <label> Usuário</label>
                     <input type="text" id="loginUser" placeholder="Digite seu usuário" required>
                 </div>
                 <div class="form-group">
-                    <label>🔒 Senha</label>
+                    <label> Senha</label>
                     <input type="password" id="loginPass" placeholder="Digite sua senha" required>
                 </div>
                 <button type="submit" class="btn-login">🔐 Entrar no Sistema</button>
@@ -117,7 +141,7 @@
                         <div class="subtitle">Sistema de Pagamentos - Banco Inter</div>
                     </div>
                     <div class="user-info">
-                        <span>👤 Usuário: <strong id="currentUser">-</strong></span>
+                        <span> Usuário: <strong id="currentUser">-</strong></span>
                         <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
                     </div>
                 </div>
@@ -131,9 +155,9 @@
             </div>
 
             <div class="tabs">
-                <button class="tab active" onclick="showTab('clientes', this)"> Clientes</button>
+                <button class="tab active" onclick="showTab('clientes', this)">👥 Clientes</button>
                 <button class="tab" onclick="showTab('devedores', this)">💰 Devedores</button>
-                <button class="tab" onclick="showTab('cobrancas', this)">💳 Cobranças</button>
+                <button class="tab" onclick="showTab('cobrancas', this)"> Cobranças</button>
                 <button class="tab" onclick="showTab('config', this)">⚙️ Config</button>
             </div>
 
@@ -158,7 +182,7 @@
 
             <div id="tab-devedores" class="tab-content">
                 <div class="card">
-                    <h2>💰 Cadastrar Devedor</h2>
+                    <h2> Cadastrar Devedor</h2>
                     <div class="form-group"><label>Cliente *</label><select id="debtorClientSelect"><option value="">Carregando...</option></select></div>
                     <div class="form-row">
                         <div class="form-group"><label>Nome do Devedor *</label><input type="text" id="debtorName" placeholder="Nome"></div>
@@ -171,7 +195,7 @@
                     <button class="btn" onclick="cadastrarDevedor()">✅ Salvar</button>
                 </div>
                 <div class="card">
-                    <h2>📊 Devedores</h2>
+                    <h2> Devedores</h2>
                     <div class="table-container"><table><thead><tr><th>Devedor</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaDevedores"></tbody></table></div>
                 </div>
             </div>
@@ -271,7 +295,7 @@
             const doc = document.getElementById('clientDoc').value.trim();
             const email = document.getElementById('clientEmail').value.trim();
             const phone = document.getElementById('clientPhone').value.trim();
-            if (!name) { alert('️ Preencha o nome!'); return; }
+            if (!name) { alert('⚠️ Preencha o nome!'); return; }
             try {
                 const { error } = await db.from('clients').insert([{ name: name, document: doc || null, email: email || null, phone: phone || null }]);
                 if (error) throw error;
@@ -306,13 +330,13 @@
         }
 
         async function excluirCliente(id) {
-            if (!confirm('️ Excluir este cliente?')) return;
+            if (!confirm('⚠️ Excluir este cliente?')) return;
             try {
                 const { error } = await db.from('clients').delete().eq('id', id);
                 if (error) throw error;
                 alert('✅ Excluído!');
                 carregarClientes();
-            } catch (e) { alert(' Erro: ' + e.message); }
+            } catch (e) { alert('❌ Erro: ' + e.message); }
         }
 
         async function cadastrarDevedor() {
@@ -323,7 +347,7 @@
             const due = document.getElementById('debtDueDate').value;
             const amount = parseFloat(amountStr.replace(',', '.'));
             if (!client_id) { alert('⚠️ Selecione um cliente!'); return; }
-            if (!name) { alert('⚠️ Preencha o nome!'); return; }
+            if (!name) { alert('️ Preencha o nome!'); return; }
             if (!amount || amount <= 0) { alert('⚠️ Valor inválido!'); return; }
             if (!due) { alert('⚠️ Preencha a data!'); return; }
             try {
@@ -436,8 +460,8 @@
                     <h3 style="color: #FFB347; margin-bottom: 20px;">💳 Dados do Cartão</h3>
                     
                     <div style="margin-bottom: 15px;">
-                        <label style="color: #FFB347; margin-bottom: 8px; display: block; font-weight: 600;">📊 Número de Parcelas (até 5x)</label>
-                        <select id="cardInstallments" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 1em; cursor: pointer;">
+                        <label style="color: #FFB347; margin-bottom: 8px; display: block; font-weight: 600;"> Número de Parcelas (até 5x)</label>
+                        <select id="cardInstallments" class="select-parcelas">
                             ${parcelasHtml}
                         </select>
                     </div>
@@ -508,17 +532,12 @@
             `;
             document.getElementById('conteudoCobranca').innerHTML = html;
             
-            // Adicionar listener para atualizar resumo quando mudar parcelas
             setTimeout(() => {
                 const selectParcelas = document.getElementById('cardInstallments');
                 if (selectParcelas) {
-                    // Mostrar quantas opções existem (debug)
-                    console.log('Total de opções de parcelas:', selectParcelas.options.length);
-                    
                     selectParcelas.addEventListener('change', function() {
                         atualizarResumo(amount);
                     });
-                    // Atualizar resumo inicial
                     atualizarResumo(amount);
                 }
             }, 100);
@@ -526,10 +545,7 @@
 
         function atualizarResumo(amount) {
             const selectElement = document.getElementById('cardInstallments');
-            if (!selectElement) {
-                console.error('Select de parcelas não encontrado!');
-                return;
-            }
+            if (!selectElement) return;
             
             const parcelas = parseInt(selectElement.value);
             const valorParcela = amount / parcelas;
@@ -541,8 +557,6 @@
             if (totalEl) totalEl.textContent = `R$ ${amount.toFixed(2)}`;
             if (parcelasEl) parcelasEl.textContent = `${parcelas}x`;
             if (valorParcelaEl) valorParcelaEl.textContent = `R$ ${valorParcela.toFixed(2)}`;
-            
-            console.log(`✅ Atualizado: ${parcelas}x de R$ ${valorParcela.toFixed(2)}`);
         }
 
         function formatarNumeroCartao(input) {
@@ -589,7 +603,7 @@
             if (!cardName) { alert('⚠️ Preencha o nome!'); return; }
             if (!cardExpiry) { alert('⚠️ Validade inválida!'); return; }
             if (!cardCvv) { alert('⚠️ CVV inválido!'); return; }
-            if (!cardCpf || cardCpf.length < 11) { alert('️ CPF inválido!'); return; }
+            if (!cardCpf || cardCpf.length < 11) { alert('⚠️ CPF inválido!'); return; }
             if (!cardEmail) { alert('⚠️ E-mail inválido!'); return; }
             
             const code = 'M1D5-' + Date.now().toString().slice(-8);
@@ -613,21 +627,16 @@
                             amount: amount, dueDate: debt.due_date,
                             payerName: debtor.name, payerDocument: debtor.document || cardCpf,
                             payerEmail: cardEmail, description: `Cobrança ${code}`,
-                            installments: installments, cardNumber: cardNumber,
-                            cardName: cardName, cardExpiry: cardExpiry,
-                            cardCvv: cardCvv, cardCpf: cardCpf
+                            installments: installments
                         })
                     });
                     
                     const contentType = resp.headers.get("content-type");
                     if (!contentType || !contentType.includes("application/json")) {
-                        const text = await resp.text();
-                        console.error('Resposta não é JSON:', text);
-                        throw new Error('Worker retornou erro. Verifique as credenciais.');
+                        throw new Error('Worker retornou erro.');
                     }
                     
                     const data = await resp.json();
-                    
                     if (!resp.ok) throw new Error(data.error || 'Erro ao processar');
                     
                     if (data.linkPagamento) {
@@ -659,15 +668,13 @@
                     carregarCobrancas();
                     
                 } catch (workerError) {
-                    console.error('Erro no Worker:', workerError);
-                    
                     const html = `
                         <h2>✅ Cobrança Registrada!</h2>
                         <div class="success-msg">✅ Cobrança salva no sistema!<br>Código: <strong>${code}</strong></div>
                         <div class="error-msg" style="margin-top:15px;">
-                            ️ <strong>Atenção:</strong> O Worker não está configurado corretamente.<br>
-                            A cobrança foi registrada no banco de dados, mas o link de pagamento não foi gerado.<br><br>
-                            Para processar pagamentos reais, configure as credenciais do Banco Inter no Cloudflare Worker.
+                            ⚠️ <strong>Atenção:</strong> O Worker não está configurado corretamente.<br>
+                            A cobrança foi registrada no banco de dados.<br>
+                            Para processar pagamentos reais, configure o Cloudflare Worker.
                         </div>
                         <div class="invoice-box">
                             <h3>📋 Detalhes</h3>
@@ -682,7 +689,7 @@
                     carregarCobrancas();
                 }
             } catch (e) {
-                alert('❌ Erro: ' + e.message);
+                alert(' Erro: ' + e.message);
             } finally {
                 removerLoading();
             }
@@ -690,6 +697,7 @@
 
         function mostrarFormularioPix() {
             const { debtor, debt, amount } = currentDebtData;
+            const pixKey = localStorage.getItem('m1d5_pixKey') || '';
             const html = `
                 <h2 style="margin-bottom: 20px;">📱 Pagamento via PIX</h2>
                 <div class="invoice-box">
@@ -697,8 +705,16 @@
                     <p><strong>Devedor:</strong> ${debtor.name}</p>
                     <p><strong>Valor:</strong> R$ ${amount.toFixed(2)}</p>
                 </div>
+                ${pixKey ? `
+                <div class="success-msg" style="margin-bottom: 15px;">
+                    ✅ <strong>Chave PIX configurada:</strong> ${pixKey}
+                </div>` : `
+                <div class="error-msg" style="margin-bottom: 15px;">
+                    ⚠️ <strong>Chave PIX não configurada!</strong><br>
+                    Vá em Configurações e cadastre sua chave PIX.
+                </div>`}
                 <div class="form-group">
-                    <label> Nome do Pagador</label>
+                    <label>👤 Nome do Pagador</label>
                     <input type="text" id="pixPayerName" value="${debtor.name}">
                 </div>
                 <div class="form-group">
@@ -718,7 +734,7 @@
             const payerName = document.getElementById('pixPayerName').value.trim();
             const payerDoc = document.getElementById('pixPayerDoc').value.replace(/\D/g, '');
             if (!payerName) { alert('⚠️ Preencha o nome!'); return; }
-            if (!payerDoc || payerDoc.length < 11) { alert('️ CPF/CNPJ inválido!'); return; }
+            if (!payerDoc || payerDoc.length < 11) { alert('⚠️ CPF/CNPJ inválido!'); return; }
             const code = 'M1D5-PIX-' + Date.now().toString().slice(-8);
             mostrarLoading();
             
@@ -742,8 +758,6 @@
                     
                     const contentType = resp.headers.get("content-type");
                     if (!contentType || !contentType.includes("application/json")) {
-                        const text = await resp.text();
-                        console.error('Resposta não é JSON:', text);
                         throw new Error('Worker retornou erro.');
                     }
                     
@@ -761,15 +775,15 @@
                         <h2>✅ PIX Gerado!</h2>
                         <div class="success-msg">✅ Código PIX criado!<br>Código: <strong>${code}</strong></div>
                         ${data.pixCode ? `
-                        <div class="pix-qr-container">
-                            <h3>📱 QR Code</h3>
-                            <img src="data:image/png;base64,${data.pixCode}" alt="QR Code">
+                        <div style="text-align: center; padding: 20px;">
+                            <h3> QR Code</h3>
+                            <img src="data:image/png;base64,${data.pixCode}" alt="QR Code" style="max-width: 280px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; background: white; margin: 20px auto;">
                         </div>` : ''}
                         ${data.pixPayload ? `
                         <div class="invoice-box" style="background:#d1fae5; border-color:#10b981;">
-                            <h3>💠 Código PIX</h3>
+                            <h3>💠 Código PIX Copia e Cola</h3>
                             <div class="invoice-code" style="font-size:0.85em;">${data.pixPayload}</div>
-                            <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')"> Copiar</button>
+                            <button class="copy-btn" onclick="copiarLink('${data.pixPayload}')">📋 Copiar</button>
                         </div>` : ''}
                         <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
                     `;
@@ -777,13 +791,21 @@
                     carregarCobrancas();
                     
                 } catch (workerError) {
-                    console.error('Erro no Worker:', workerError);
+                    const pixKey = localStorage.getItem('m1d5_pixKey') || 'Não configurada';
                     const html = `
                         <h2>✅ Cobrança PIX Registrada!</h2>
                         <div class="success-msg">✅ Cobrança salva no sistema!<br>Código: <strong>${code}</strong></div>
+                        <div class="invoice-box" style="background:#d1fae5; border-color:#10b981;">
+                            <h3>📱 Chave PIX para Pagamento</h3>
+                            <p style="margin-bottom: 10px;">Envie esta chave PIX ao cliente:</p>
+                            <div class="invoice-code" style="font-size: 1.2em; font-weight: bold;">${pixKey}</div>
+                            <button class="copy-btn" onclick="copiarLink('${pixKey}')">📋 Copiar Chave PIX</button>
+                            <button class="btn btn-pix" onclick="enviarWhatsAppPix('${debtor.name}', '${pixKey}', 'R$ ${amount.toFixed(2)}', '${code}')" style="margin-top: 10px;">📱 Enviar por WhatsApp</button>
+                        </div>
                         <div class="error-msg" style="margin-top:15px;">
-                            ⚠️ <strong>Atenção:</strong> O Worker não está configurado.<br>
-                            Para gerar QR Code PIX, configure o Cloudflare Worker.
+                            ⚠️ <strong>QR Code automático indisponível.</strong><br>
+                            O Cloudflare Worker precisa ser configurado com as credenciais do Banco Inter para gerar QR Codes automaticamente.<br><br>
+                            <strong>Enquanto isso:</strong> Use a chave PIX acima para receber o pagamento manualmente.
                         </div>
                         <button class="btn" onclick="fecharModal(); carregarCobrancas();" style="width:100%; margin-top:20px;">✅ Concluir</button>
                     `;
@@ -795,6 +817,11 @@
             } finally {
                 removerLoading();
             }
+        }
+
+        function enviarWhatsAppPix(nome, pixKey, valor, codigo) {
+            const msg = `Olá ${nome}! Segue a chave PIX para pagamento de ${valor} (Código: ${codigo}):\n\n${pixKey}\n\nBanco: Inter\nBeneficiário: M1D5 Consultoria`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         async function carregarCobrancas() {
@@ -846,7 +873,7 @@
         }
 
         async function excluirCobranca(id) {
-            if (!confirm('️ Excluir cobrança?')) return;
+            if (!confirm('⚠️ Excluir cobrança?')) return;
             try {
                 const { error } = await db.from('invoices').delete().eq('id', id);
                 if (error) throw error;
@@ -867,7 +894,7 @@
             const clientSecret = document.getElementById('interClientSecret').value.trim();
             const account = document.getElementById('interAccount').value.trim();
             const pixKey = document.getElementById('pixKey').value.trim();
-            if (!clientId || !clientSecret || !account) { alert('⚠️ Preencha todos os campos!'); return; }
+            if (!clientId || !clientSecret || !account) { alert('️ Preencha todos os campos!'); return; }
             localStorage.setItem('m1d5_interClientId', clientId);
             localStorage.setItem('m1d5_interClientSecret', clientSecret);
             localStorage.setItem('m1d5_interAccount', account);
